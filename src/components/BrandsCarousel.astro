@@ -1,0 +1,137 @@
+---
+// BrandsCarousel.astro
+// -----------------------------------------------------------
+// DECISIÓN: ¿React o no para el carrusel?
+//
+// No. Uso un "marquee" hecho con CSS puro (animación de
+// translateX en loop). Los motivos:
+//
+// 1. Astro ya renderiza HTML estático por defecto. Si metemos
+//    un componente React acá, Astro tiene que mandar al
+//    navegador el runtime de React + "hidratar" ese componente
+//    en el cliente, solo para mover unas imágenes de un lado
+//    a otro. Es peso y complejidad que no se justifican.
+// 2. Este carrusel NO necesita estado (no hay botones, no hay
+//    "página actual", nadie hace click para cambiar de marca).
+//    Es 100% decorativo/automático -> es el caso de uso ideal
+//    para CSS/JS plano, y el caso menos ideal para React.
+// 3. Regla general que te sirve para el resto del proyecto:
+//    usá React (o cualquier framework de UI) cuando un
+//    componente tiene ESTADO que cambia por interacción del
+//    usuario (un acordeón que se abre/cierra, un formulario
+//    con validaciones en vivo, un contador). Para animaciones
+//    automáticas o efectos visuales, CSS/JS puro alcanza y
+//    carga más rápido.
+//
+// Técnica: duplicamos la lista de logos una vez (brands + brands)
+// y animamos todo el contenedor con translateX(-50%) en loop
+// infinito. Como la segunda mitad es idéntica a la primera, el
+// "corte" del loop es invisible para el ojo.
+interface Brand {
+  name: string;
+  logo: string;
+}
+
+interface Props {
+  brands: Brand[];
+}
+
+const { brands } = Astro.props;
+const track = [...brands, ...brands]; // duplicado para el loop infinito
+---
+
+<section class="brands" id="marcas">
+  <div class="container brands__intro">
+    <p class="eyebrow">Marcas</p>
+    <h2 class="brands__title">Trabajamos con las siguientes marcas</h2>
+    <p class="brands__subtitle">Equipos chicos, medianos y grandes</p>
+  </div>
+
+  <div class="brands__viewport" role="group" aria-label="Marcas con las que trabajamos">
+    <div class="brands__track">
+      {track.map((b) => (
+        <a href={`/marcas/${b.name.toLowerCase().replace(/\s+/g, '-')}`} class="brands__item" aria-label={b.name}>
+          <img src={b.logo} alt={b.name} loading="lazy" />
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .brands {
+    padding-block: var(--space-section);
+    overflow: hidden;
+  }
+
+  .brands__intro {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .brands__title {
+    font-size: var(--fs-h2);
+  }
+
+  .brands__subtitle {
+    margin-top: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .brands__viewport {
+    /* mask: difumina los bordes izquierdo/derecho para que las
+       marcas "aparezcan/desaparezcan" en vez de cortarse feo */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .brands__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    animation: scroll-left 26s linear infinite;
+  }
+
+  .brands__viewport:hover .brands__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    /* -50% porque la lista está duplicada: al llegar a la mitad
+       exacta, visualmente se ve idéntico al inicio -> loop perfecto */
+    to { transform: translateX(-50%); }
+  }
+
+  .brands__item {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+  }
+
+  .brands__item img {
+    height: 100%;
+    width: auto;
+    max-width: 150px;
+    object-fit: contain;
+    /* Logos en escala de grises por defecto, color al pasar el
+       mouse: mantiene la fila prolija y "seria" y da un pequeño
+       feedback interactivo sin sumar ruido visual. */
+    filter: grayscale(1) opacity(0.55);
+    transition: filter 0.25s ease;
+  }
+
+  .brands__item:hover img,
+  .brands__item:focus-visible img {
+    filter: grayscale(0) opacity(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brands__track {
+      animation: none;
+    }
+  }
+</style>

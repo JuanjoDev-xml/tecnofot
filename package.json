@@ -1,5 +1,5 @@
 {
-  "name": "techline-landing",
+  "name": "tecnofot",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
     "astro": "^7.1.6"
   }
 }

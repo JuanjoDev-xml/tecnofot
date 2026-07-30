@@ -1,0 +1,158 @@
+---
+// Hero.astro
+// -----------------------------------------------------------
+// Recibe un array de imágenes de fondo. Si mandás UNA sola,
+// queda estática. Si mandás VARIAS, el componente arma
+// automáticamente una transición tipo "crossfade" entre ellas
+// (fade suave, no es un slider con flechas: no lo pidieron y
+// sumaría complejidad/botones que compiten con los CTAs).
+//
+// Por qué con CSS puro y no una librería de carrusel: son fotos
+// de FONDO, no contenido que el usuario tenga que controlar, así
+// que un crossfade con @keyframes alcanza y pesa casi nada.
+interface Props {
+  images: string[];
+}
+
+const { images } = Astro.props;
+const whatsappNumber = '5492914070341'; // mismo número que ya usa el cliente
+const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.');
+
+// Si hay más de una foto, cada slide dura 6s -> el ciclo completo
+// dura "cantidad de fotos x 6s". Lo calculamos acá en JS y se lo
+// pasamos al CSS como variable, en vez de intentar hacer la cuenta
+// dentro del CSS (los custom properties de CSS no soportan
+// operaciones matemáticas ni condicionales tipo "si > 1 entonces").
+const isSlideshow = images.length > 1;
+const cycleSeconds = images.length * 6;
+---
+
+<section class="hero">
+  <div class:list={['hero__bg', { 'hero__bg--slideshow': isSlideshow }]} style={`--cycle: ${cycleSeconds}s`}>
+    {images.map((src, i) => (
+      <div
+        class="hero__slide"
+        style={`background-image: url(${src}); animation-delay: ${i * 6}s;`}
+      ></div>
+    ))}
+    <div class="hero__overlay"></div>
+    <!-- Acento "halftone": una trama de puntos que remite a la
+         trama de impresión CMYK. Es el elemento "firma" del sitio:
+         chico, sutil, pero ligado al rubro (impresión) en vez de
+         un gradiente decorativo genérico. -->
+    <svg class="hero__halftone" width="220" height="220" viewBox="0 0 220 220" aria-hidden="true">
+      <defs>
+        <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="3" cy="3" r="2.6" fill="var(--color-cyan)" />
+        </pattern>
+      </defs>
+      <rect width="220" height="220" fill="url(#dots)" />
+    </svg>
+  </div>
+
+  <div class="container hero__content">
+    <h1 class="hero__title">Digitalización<br />e impresión</h1>
+    <p class="hero__subtitle">Soluciones en el manejo de documentos</p>
+
+    <div class="hero__actions">
+      <a
+        class="btn btn--primary"
+        href={`https://wa.me/${whatsappNumber}?text=${whatsappMsg}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.19c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.11.11-1.79-.11a13.6 13.6 0 0 1-1.63-.6c-2.87-1.24-4.74-4.12-4.89-4.31-.15-.2-1.17-1.55-1.17-2.96s.73-2.1 1-2.39c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.15.11.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.27.36-.22.6-.13.24.09 1.55.73 1.81.86.27.14.44.2.51.31.07.12.07.66-.17 1.33Z"/>
+        </svg>
+        Hablar por WhatsApp
+      </a>
+      <a class="btn btn--secondary" href="#marcas">Conózcanos</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    color: var(--color-paper);
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+  }
+
+  /* Caso simple: una sola foto -> queda fija, sin animar nada. */
+  .hero__bg:not(.hero__bg--slideshow) .hero__slide {
+    opacity: 1;
+  }
+
+  /* Caso slideshow: varias fotos -> cada una hace fade in/out,
+     usando "--cycle" (calculado en el frontmatter de Astro como
+     cantidad de fotos x 6s) como duración total del ciclo. */
+  .hero__bg--slideshow .hero__slide {
+    animation: crossfade var(--cycle) infinite;
+  }
+
+  @keyframes crossfade {
+    0%, 12% { opacity: 1; }
+    25%, 100% { opacity: 0; }
+  }
+
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      190deg,
+      rgba(20, 22, 31, 0.35) 0%,
+      rgba(20, 22, 31, 0.55) 55%,
+      rgba(46, 48, 146, 0.75) 100%
+    );
+  }
+
+  .hero__halftone {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    padding-block: 3rem clamp(3rem, 8vw, 5.5rem);
+  }
+
+  .hero__title {
+    font-size: var(--fs-h1);
+    color: var(--color-paper);
+  }
+
+  .hero__subtitle {
+    margin-top: 1rem;
+    font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 32ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 2.25rem;
+  }
+</style>

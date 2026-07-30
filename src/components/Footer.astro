@@ -1,0 +1,102 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <p class="footer__logo">TECNOFOT</p>
+      <p class="footer__text">Thompson 309, esq. Fitz Roy — Bahía Blanca</p>
+      <p class="footer__text">
+        <a href="mailto:ventas@tecnofotsa.com.ar">ventas@tecnofotsa.com.ar</a>
+      </p>
+      <p class="footer__text">
+        <a href="tel:+542914516098">(291) 451-6098</a>
+      </p>
+    </div>
+
+    <nav class="footer__nav" aria-label="Enlaces del sitio">
+      <a href="/nosotros">Nosotros</a>
+      <a href="/servicios">Servicios</a>
+      <a href="/#marcas">Marcas</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
+
+    <div class="footer__social">
+      <a href="https://www.instagram.com/tecnofotsa/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Tecnofot">
+        Instagram
+      </a>
+      <a href="https://wa.me/5492914070341" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp de Tecnofot">
+        WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <p>© {year} Tecnofot SA. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-ink);
+    color: rgba(255, 255, 255, 0.75);
+    padding-top: 3.5rem;
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .footer__logo {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--color-paper);
+    margin-bottom: 0.75rem;
+  }
+
+  .footer__text {
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .footer__text a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .footer__nav,
+  .footer__social {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+  }
+
+  .footer__nav a,
+  .footer__social a {
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .footer__nav a:hover,
+  .footer__social a:hover {
+    color: var(--color-cyan);
+  }
+
+  .footer__bottom {
+    padding-block: 1.25rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  @media (min-width: 700px) {
+    .footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+</style>

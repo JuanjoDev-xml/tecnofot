@@ -1,0 +1,269 @@
+---
+// Header.astro
+// -----------------------------------------------------------
+// El index no lo pediste explícitamente en la lista de secciones,
+// pero como el sitio va a tener 8 páginas (index + 7 subpáginas),
+// sin este Header el visitante no tendría forma de llegar a
+// "Nosotros", "Servicios" o a cada marca. Lo dejo simple y fijo
+// arriba, transparente sobre el Hero y sólido al scrollear.
+//
+// Los links a las marcas y subpáginas ya apuntan a las rutas
+// que vamos a crear en los próximos pasos (ej: /nosotros,
+// /servicios, /marcas/sharp). Por ahora esas páginas no existen
+// todavía -> eso lo resolvemos en el próximo paso.
+const marcas = [
+  { nombre: 'Sharp', slug: 'sharp' },
+  { nombre: 'Brother', slug: 'brother' },
+  { nombre: 'Konica Minolta', slug: 'konica-minolta' },
+  { nombre: 'Sindoh', slug: 'sindoh' },
+  { nombre: 'Rowe', slug: 'rowe' },
+];
+---
+
+<header class="header" id="site-header">
+  <div class="container header__row">
+    <a href="/" class="header__logo">TECNOFOT</a>
+
+    <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
+      <a href="/">Inicio</a>
+
+      <div class="header__dropdown">
+        <button class="header__dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+          Marcas
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="header__dropdown-menu">
+          {marcas.map((m) => (
+            <a href={`/marcas/${m.slug}`}>{m.nombre}</a>
+          ))}
+        </div>
+      </div>
+
+      <a href="/nosotros">Nosotros</a>
+      <a href="/servicios">Servicios</a>
+      <a href="/#contacto" class="header__cta">Contacto</a>
+    </nav>
+
+    <button
+      class="header__burger"
+      id="burger-btn"
+      aria-controls="site-nav"
+      aria-expanded="false"
+      aria-label="Abrir menú"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    padding-block: 1.1rem;
+    transition: background 0.25s ease, box-shadow 0.25s ease, padding-block 0.25s ease;
+  }
+
+  /* Estado inicial: transparente sobre el Hero */
+  .header {
+    background: transparent;
+  }
+
+  /* Clase que agrega el script cuando el usuario scrollea */
+  .header.is-scrolled {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 0 var(--color-line);
+    padding-block: 0.7rem;
+  }
+
+  .header__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header__logo {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: var(--color-paper);
+    transition: color 0.25s ease;
+  }
+
+  .header.is-scrolled .header__logo {
+    color: var(--color-indigo);
+  }
+
+  .header__nav {
+    display: none; /* mobile-first: arranca oculto, se muestra en desktop */
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .header__nav a {
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--color-paper);
+    transition: color 0.25s ease, opacity 0.15s ease;
+  }
+
+  .header__nav a:hover {
+    opacity: 0.75;
+  }
+
+  .header.is-scrolled .header__nav a {
+    color: var(--color-ink);
+  }
+
+  .header__cta {
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    border: 1.5px solid currentColor;
+  }
+
+  .header__dropdown {
+    position: relative;
+  }
+
+  .header__dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    color: inherit;
+  }
+
+  .header__dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.9rem);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-paper);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    padding: 0.5rem;
+    min-width: 190px;
+    display: grid;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .header__dropdown:hover .header__dropdown-menu,
+  .header__dropdown:focus-within .header__dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .header__dropdown-menu a {
+    color: var(--color-ink) !important;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .header__dropdown-menu a:hover {
+    background: var(--color-mist);
+    opacity: 1;
+  }
+
+  /* --- Botón hamburguesa (solo visible en mobile) --- */
+  .header__burger {
+    display: grid;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 0.4rem;
+  }
+
+  .header__burger span {
+    width: 22px;
+    height: 2px;
+    background: var(--color-paper);
+    transition: background 0.25s ease, transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .header.is-scrolled .header__burger span {
+    background: var(--color-ink);
+  }
+
+  /* --- Menú mobile desplegado --- */
+  .header__nav.is-open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-paper);
+    padding: 1.5rem 1.25rem 2rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .header__nav.is-open a {
+    color: var(--color-ink);
+  }
+
+  .header__nav.is-open .header__dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: none;
+    transform: none;
+    padding-left: 0.75rem;
+  }
+
+  @media (min-width: 900px) {
+    .header__nav {
+      display: flex;
+    }
+    .header__burger {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Este script es vanilla JS (sin frameworks) porque lo único
+  // que necesita hacer es: (1) sumar una clase cuando se scrollea,
+  // y (2) abrir/cerrar el menú en mobile. No justifica traer React
+  // para esto.
+  const header = document.getElementById('site-header');
+  const burger = document.getElementById('burger-btn');
+  const nav = document.getElementById('site-nav');
+
+  const onScroll = () => {
+    if (window.scrollY > 12) {
+      header?.classList.add('is-scrolled');
+    } else {
+      header?.classList.remove('is-scrolled');
+    }
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  burger?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('is-open');
+    burger.setAttribute('aria-expanded', String(!!isOpen));
+    // Mientras el menú mobile está abierto, forzamos el header
+    // a verse "sólido" aunque estemos arriba del todo, para que
+    // el texto oscuro del menú se lea bien.
+    header?.classList.toggle('is-scrolled', !!isOpen);
+  });
+</script>

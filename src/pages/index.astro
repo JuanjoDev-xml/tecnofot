@@ -1,7 +1,41 @@
 ---
-import Layout from "../layouts/Layout.astro"
+// index.astro
+// -----------------------------------------------------------
+// Esta página arma el orden exacto que pediste: Hero -> Marcas
+// -> Nuestra empresa -> Ubicación -> Contacto. Cada sección es
+// un componente separado (ver src/components/) para que el
+// archivo se lea como un índice claro, y para poder reusar
+// piezas (como el Footer o el Header) en las 7 subpáginas que
+// vienen después.
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import BrandsCarousel from '../components/BrandsCarousel.astro';
+import AboutSection from '../components/AboutSection.astro';
+import LocationMap from '../components/LocationMap.astro';
+import ContactForm from '../components/ContactForm.astro';
+
+// Fotos del Hero: poné acá 1 o varias rutas dentro de /public/images.
+// Con una sola, el Hero queda estático; con 2+ hace crossfade automático.
+const heroImages = ['/images/hero-1.jpg'];
+
+// Logos de marcas: son marcas registradas de terceros (Sharp,
+// Brother, Konica Minolta, etc.), así que no las genero yo acá.
+// Pedile al cliente los logos oficiales (los puede sacar de la
+// web de cada fabricante o de su sitio viejo) y guardalos en
+// /public/brands/ con estos mismos nombres de archivo.
+const brands = [
+  { name: 'Sharp', logo: '/brands/sharp.svg' },
+  { name: 'Brother', logo: '/brands/brother.svg' },
+  { name: 'Konica Minolta', logo: '/brands/konica-minolta.svg' },
+  { name: 'Sindoh', logo: '/brands/sindoh.svg' },
+  { name: 'Rowe', logo: '/brands/rowe.svg' },
+];
 ---
 
-<Layout>
-	
+<Layout title="Tecnofot | Impresión y digitalización de documentos en Bahía Blanca">
+  <Hero images={heroImages} />
+  <BrandsCarousel brands={brands} />
+  <AboutSection />
+  <LocationMap />
+  <ContactForm />
 </Layout>
