@@ -36,7 +36,7 @@ const marcas = [
         </button>
         <div class="header__dropdown-menu">
           {marcas.map((m) => (
-            <a href={`/marcas/${m.slug}`}>{m.nombre}</a>
+            <a target="_blank" rel="noopnener noreferer" href={`/marcas/${m.slug}`}>{m.nombre}</a>
           ))}
         </div>
       </div>
