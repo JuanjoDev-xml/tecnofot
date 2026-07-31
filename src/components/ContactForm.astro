@@ -1,0 +1,223 @@
+---
+// ContactForm.astro
+// -----------------------------------------------------------
+// IMPORTANTE — leé esto antes de poner el sitio en producción:
+//
+// Este sitio es estático (Astro genera HTML/CSS/JS puro, sin
+// servidor propio corriendo). Un <form> HTML por sí solo NO
+// puede "mandar un mail": necesita algo del lado del servidor
+// que reciba los datos y dispare el envío a ventas@tecnofotsa.com.ar.
+//
+// Para no complicar el proyecto con un backend propio (hosting
+// de servidor, base de datos, etc. — innecesario para un
+// formulario de contacto), la opción más simple y prolija es
+// usar un servicio de "manejo de formularios" como Formspree
+// (formspree.io) o Web3Forms (web3forms.com). Ambos tienen plan
+// gratuito, y el único cambio necesario es:
+//
+//   1. Crear una cuenta gratis en, por ejemplo, Formspree.
+//   2. Crear un formulario ahí apuntando a ventas@tecnofotsa.com.ar
+//   3. Reemplazar FORM_ENDPOINT más abajo por la URL que te den
+//      (algo como "https://formspree.io/f/xxxxxxx").
+//
+// Mientras tanto, dejo el formulario funcionando visualmente y
+// con validación, pero el envío real no va a funcionar hasta
+// que conectes ese endpoint.
+const FORM_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
+---
+
+<section class="contact section" id="contacto">
+  <div class="container contact__grid">
+    <div class="contact__intro">
+      <p class="eyebrow">Contacto</p>
+      <h2 class="contact__title">Escribinos</h2>
+      <p class="contact__text">
+        Contanos qué necesitás y te respondemos a la brevedad, o si
+        preferís algo más directo, hablamos por WhatsApp.
+      </p>
+      <a class="contact__whatsapp" href="https://wa.me/5492914070341" target="_blank" rel="noopener noreferrer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.19c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.11.11-1.79-.11a13.6 13.6 0 0 1-1.63-.6c-2.87-1.24-4.74-4.12-4.89-4.31-.15-.2-1.17-1.55-1.17-2.96s.73-2.1 1-2.39c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.15.11.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.27.36-.22.6-.13.24.09 1.55.73 1.81.86.27.14.44.2.51.31.07.12.07.66-.17 1.33Z"/>
+        </svg>
+        (291) 407-0341
+      </a>
+    </div>
+
+    <form class="contact__form" action={FORM_ENDPOINT} method="POST" id="contact-form">
+      <div class="field">
+        <label for="name">Nombre y apellido</label>
+        <input id="name" name="name" type="text" required autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="phone">Teléfono (opcional)</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" />
+      </div>
+
+      <div class="field">
+        <label for="message">Mensaje</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+      </div>
+
+      <!-- Campo "trampa" para bots (honeypot): invisible para
+           personas, pero los bots que completan formularios
+           automáticamente sí lo llenan. Si llega completo, se
+           descarta el envío. Es una forma simple de frenar spam
+           sin pedirle un captcha molesto al usuario real. -->
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="field--hidden" />
+
+      <button type="submit" class="btn btn--primary contact__submit">Enviar mensaje</button>
+      <p class="contact__status" id="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact__grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .contact__title {
+    font-size: var(--fs-h2);
+    margin-top: 0.25rem;
+  }
+
+  .contact__text {
+    margin-top: 1rem;
+    font-size: 1.05rem;
+    max-width: 40ch;
+  }
+
+  .contact__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+    font-weight: 700;
+    color: var(--color-indigo);
+    text-decoration: none;
+  }
+
+  .contact__form {
+    display: grid;
+    gap: 1.1rem;
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .field--hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    font-size: 0.98rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--color-line);
+    background: var(--color-mist);
+    color: var(--color-ink);
+    resize: vertical;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--color-cyan-dim);
+    background: var(--color-paper);
+  }
+
+  .contact__submit {
+    justify-self: start;
+    margin-top: 0.5rem;
+  }
+
+  .contact__status {
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 1.2em;
+  }
+
+  .contact__status[data-state='ok'] {
+    color: #1a7f43;
+  }
+
+  .contact__status[data-state='error'] {
+    color: #c0362c;
+  }
+
+  @media (min-width: 860px) {
+    .contact__grid {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 4rem;
+    }
+  }
+</style>
+
+<script>
+  // Envío por fetch en vez de dejar que el <form> recargue la
+  // página: así podemos mostrarle al usuario "¡Gracias, tu
+  // mensaje fue enviado!" sin salir del sitio. Si el endpoint
+  // todavía no está configurado (ver el comentario arriba en el
+  // frontmatter del componente), Formspree devuelve error y se
+  // lo avisamos igual, en vez de fingir que se mandó.
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status) return;
+
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    submitBtn.disabled = true;
+    status.textContent = 'Enviando...';
+    status.removeAttribute('data-state');
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+
+      if (response.ok) {
+        status.textContent = '¡Gracias! Tu mensaje fue enviado, te vamos a responder a la brevedad.';
+        status.setAttribute('data-state', 'ok');
+        form.reset();
+      } else {
+        throw new Error('Respuesta no exitosa');
+      }
+    } catch {
+      status.textContent = 'No pudimos enviar el mensaje. Probá de nuevo o escribinos por WhatsApp.';
+      status.setAttribute('data-state', 'error');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>

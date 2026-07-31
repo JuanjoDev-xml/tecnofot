@@ -1,43 +1,51 @@
-# Astro Starter Kit: Minimal
+# Tecnofot — sitio nuevo
 
-```sh
-npm create astro@latest -- --template minimal
+## Cómo correrlo en tu máquina
+
+1. Instalá las dependencias (solo la primera vez):
+   ```
+   npm install
+   ```
+2. Levantá el servidor de desarrollo:
+   ```
+   npm run dev
+   ```
+3. Abrí http://localhost:4321 en el navegador. Se actualiza solo
+   cada vez que guardás un archivo.
+
+## Qué falta antes de publicarlo
+
+- **Fotos reales**: reemplazá `public/images/hero-1.jpg` y
+  `public/images/nuestra-empresa.jpg` por fotos profesionales del
+  cliente (mismo nombre de archivo, o cambiá la ruta en
+  `src/pages/index.astro` y `src/components/AboutSection.astro`).
+- **Logos de marcas**: reemplazá los archivos de `public/brands/`
+  (ahora son placeholders de texto) por los logos oficiales de
+  Sharp, Brother, Konica Minolta, Sindoh y Rowe, en formato SVG o
+  PNG con fondo transparente, con el mismo nombre de archivo.
+- **Formulario de contacto**: creá una cuenta gratis en
+  https://formspree.io (u otro servicio similar) apuntando a
+  ventas@tecnofotsa.com.ar, y pegá esa URL en la constante
+  FORM_ENDPOINT de src/components/ContactForm.astro. Sin esto,
+  el formulario se ve bien pero no manda el mail.
+- **Subpáginas**: todavía faltan /nosotros, /servicios y una
+  página por cada marca (7 en total). El Header ya tiene los
+  links armados apuntando a esas rutas.
+
+## Estructura del proyecto
+
 ```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+  layouts/Layout.astro       -> molde comun (head, Header, Footer)
+  components/
+    Header.astro             -> navegacion fija + menu mobile
+    Hero.astro                -> portada con CTA a WhatsApp
+    BrandsCarousel.astro      -> carrusel automatico de marcas
+    AboutSection.astro        -> "Nuestra empresa"
+    LocationMap.astro         -> mapa embebido
+    ContactForm.astro         -> formulario de contacto
+    Footer.astro
+  pages/
+    index.astro                -> arma el orden de secciones del home
+  styles/global.css            -> colores, tipografia y espaciados (tokens)
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

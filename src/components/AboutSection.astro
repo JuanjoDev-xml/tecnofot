@@ -1,0 +1,152 @@
+---
+// AboutSection.astro
+// -----------------------------------------------------------
+// Mantengo la idea original del cliente (texto + imagen al
+// lado) porque funciona bien y es un patrón que la gente
+// reconoce enseguida. Lo que cambio respecto al sitio viejo:
+// - Le agrego una pequeña tarjeta de "40 años" superpuesta a
+//   la imagen (no es una fila de 3 stats genérica: es UN dato
+//   real y verificable -> "empezaron en 1985"), como forma de
+//   generar confianza sin inventar métricas.
+// - La imagen se recorta con esquinas redondeadas + el mismo
+//   patrón de puntos (halftone) del Hero, como detalle que se
+//   repite y ayuda a que el sitio se sienta "de una sola pieza"
+//   en vez de secciones pegadas sin relación entre sí.
+const anioFundacion = 1985;
+const currentYear = new Date().getFullYear();
+const antiguedad = currentYear - anioFundacion;
+---
+
+<section class="about section">
+  <div class="container about__grid">
+    <div class="about__copy">
+      <p class="eyebrow">Nuestra empresa</p>
+      <h2 class="about__title">Más de {antiguedad} años acompañando a empresas de Bahía Blanca</h2>
+      <p class="about__text">
+        Tecnofot comenzó como una empresa de fotocopiadoras en 1985 y, con
+        el tiempo, fue acompañando los cambios del mercado: hoy nos
+        especializamos en impresión y digitalización de documentos, con
+        equipos y soporte técnico pensados para necesidades reales de cada
+        cliente, desde oficinas chicas hasta operaciones más grandes.
+      </p>
+      <a class="about__link" href="/nosotros">
+        Conocer nuestra historia
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="about__media">
+      <svg class="about__halftone" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <pattern id="dots-about" width="16" height="16" patternUnits="userSpaceOnUse">
+            <circle cx="3" cy="3" r="2.3" fill="var(--color-cyan)" />
+          </pattern>
+        </defs>
+        <rect width="120" height="120" fill="url(#dots-about)" />
+      </svg>
+
+      <img
+        src="/images/nuestra-empresa.jpg"
+        alt="Equipo técnico de Tecnofot trabajando"
+        class="about__img"
+      />
+
+      <div class="about__badge">
+        <span class="about__badge-number">{anioFundacion}</span>
+        <span class="about__badge-label">Desde 1985 en Bahía Blanca</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about__grid {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .about__title {
+    font-size: var(--fs-h2);
+    margin-top: 0.25rem;
+  }
+
+  .about__text {
+    margin-top: 1.25rem;
+    font-size: 1.05rem;
+    max-width: 52ch;
+  }
+
+  .about__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    font-weight: 700;
+    color: var(--color-indigo);
+    text-decoration: none;
+  }
+
+  .about__link svg {
+    transition: transform 0.15s ease;
+  }
+
+  .about__link:hover svg {
+    transform: translateX(3px);
+  }
+
+  .about__media {
+    position: relative;
+  }
+
+  .about__halftone {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    opacity: 0.5;
+    z-index: 0;
+  }
+
+  .about__img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+
+  .about__badge {
+    position: absolute;
+    z-index: 2;
+    left: 1.25rem;
+    bottom: -1.25rem;
+    background: var(--color-indigo);
+    color: var(--color-paper);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .about__badge-number {
+    font-weight: 800;
+    font-size: 1.4rem;
+  }
+
+  .about__badge-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 16ch;
+  }
+
+  @media (min-width: 860px) {
+    .about__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+  }
+</style>

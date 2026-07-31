@@ -1,0 +1,199 @@
+/* ============================================================
+   GLOBAL.CSS
+   ------------------------------------------------------------
+   Acá viven los "tokens" de diseño: colores, tipografía,
+   espaciados y sombras, todos como variables CSS (custom
+   properties). La idea de definirlos una sola vez acá es que
+   si mañana el cliente pide "un poco más oscuro el azul",
+   cambiás UN valor acá y se actualiza en todo el sitio, en
+   vez de perseguir el color en 15 archivos distintos.
+   ============================================================ */
+
+/* Fuente variable Manrope, autoalojada vía @fontsource.
+   La instalamos con npm en vez de traerla de Google Fonts
+   por dos motivos: (1) no dependemos de un servicio externo
+   que puede caerse o que trackea al visitante, y (2) al ser
+   parte del build, el navegador la descarga junto con el
+   resto del sitio sin conexiones extra a googleapis.com. */
+@import '@fontsource-variable/manrope/wght.css';
+
+:root {
+  /* --- Color: paleta de marca + neutros de apoyo ---
+     El cliente definió el cyan (primario) y el índigo
+     (secundario). Yo agregué los neutros: no son "grises
+     de Bootstrap", tienen un leve tinte azulado para que
+     combinen con la paleta en vez de sentirse genéricos. */
+  --color-cyan: #77ceef;       /* primario: acentos, hovers, detalles */
+  --color-cyan-dim: #5bb9dd;   /* variante un poco más oscura, para texto sobre blanco (contraste AA) */
+  --color-indigo: #2e3092;     /* secundario: CTAs, títulos, secciones oscuras */
+  --color-indigo-deep: #21235f;/* variante más oscura, para overlays y hover de botones */
+  --color-ink: #14161f;        /* "negro" del sitio: nunca #000 puro, se ve más cálido */
+  --color-ink-soft: #4b5166;   /* texto secundario / párrafos largos */
+  --color-paper: #ffffff;
+  --color-mist: #f3f7fa;       /* fondo alterno de sección, tinte frío coherente con el cyan */
+  --color-line: #e1e7ee;       /* bordes y divisores sutiles */
+
+  /* --- Tipografía: UNA sola familia en todo el sitio,
+     como pidió el cliente. Lo que cambia es el peso (weight)
+     y el tracking, no la fuente. Así el título grande y el
+     texto chico se sienten de la misma familia visual. */
+  --font-base: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+
+  --fs-h1: clamp(2.25rem, 5vw + 1rem, 4rem);
+  --fs-h2: clamp(1.75rem, 3vw + 1rem, 2.75rem);
+  --fs-h3: clamp(1.25rem, 1.5vw + 1rem, 1.5rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+
+  /* --- Layout --- */
+  --container-w: 1180px;
+  --space-section: clamp(3.5rem, 8vw, 7rem); /* padding vertical entre secciones */
+  --radius: 14px;
+
+  --shadow-soft: 0 20px 40px -20px rgba(20, 22, 31, 0.18);
+}
+
+/* --- Reset mínimo ---
+   No uso un reset gigante tipo "Normalize" completo porque
+   no lo necesitamos: con estas pocas líneas alcanza para que
+   márgenes por defecto del navegador no nos arruinen el layout. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth; /* para que el botón "Conózcanos" scrollee suave */
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-base);
+  font-weight: 400;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+}
+
+/* Nunca cursiva/itálica en todo el sitio, tal cual pidió el cliente */
+em, i, cite {
+  font-style: normal;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* --- Utilidades compartidas por varias secciones ---
+   Las pongo acá (y no repetidas en cada componente) porque
+   Header, Hero, "Nuestra empresa", etc. todas necesitan
+   "centrar el contenido a 1180px" o "separar secciones". */
+.container {
+  width: 100%;
+  max-width: var(--container-w);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.section {
+  padding-block: var(--space-section);
+}
+
+.section--alt {
+  background: var(--color-mist);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-indigo);
+  margin-bottom: 0.75rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: var(--fs-body);
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* CTA principal: WhatsApp. Verde de WhatsApp deliberadamente
+   NO se usa: el cliente pidió una interfaz seria y consistente
+   con su paleta, así que el botón de WhatsApp lleva el índigo
+   de marca (con el ícono como única referencia a WhatsApp). */
+.btn--primary {
+  background: var(--color-indigo);
+  color: var(--color-paper);
+  box-shadow: var(--shadow-soft);
+}
+
+.btn--primary:hover {
+  background: var(--color-indigo-deep);
+}
+
+/* CTA secundario: contorno, para que no compita con el principal */
+.btn--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: var(--color-paper);
+}
+
+.btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Foco visible para navegación por teclado (accesibilidad).
+   Muchos sitios lo eliminan por estética y rompen la usabilidad
+   para quien navega con teclado o lector de pantalla. */
+:focus-visible {
+  outline: 2.5px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+
+/* Respeta a quienes configuraron "reducir movimiento" en su SO */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

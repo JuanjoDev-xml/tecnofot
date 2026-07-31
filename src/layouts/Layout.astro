@@ -1,16 +1,50 @@
 ---
+// Layout.astro
+// -----------------------------------------------------------
+// Este es el "molde" que va a envolver TODAS las páginas del
+// sitio (index.astro hoy, y mañana /nosotros, /servicios y las
+// 5 páginas de marcas). En vez de repetir el <head>, el Header
+// y el Footer en cada página, cada página futura va a hacer:
+//
+//   ---
+//   import Layout from '../layouts/Layout.astro';
+//   ---
+//   <Layout title="Nosotros | Tecnofot">
+//     ...el contenido de esa página...
+//   </Layout>
+//
+// Esto es lo que en Astro se llama un "layout": un componente
+// que recibe contenido adentro (con <slot />) y le agrega la
+// estructura común.
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
 
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Tecnofot — soluciones en impresión y digitalización de documentos en Bahía Blanca.',
+} = Astro.props;
 ---
 
+<!doctype html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" href="favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Tecnofot SA - Bahía Blanca Impresiones</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header />
+    <!-- El <slot /> es donde Astro inyecta el contenido específico
+         de cada página (Hero, secciones, etc.) -->
+    <slot />
+    <Footer />
+  </body>
 </html>
