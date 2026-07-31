@@ -22,7 +22,7 @@ const marcas = [
 
 <header class="header" id="site-header">
   <div class="container header__row">
-    <a href="#" class="header__logo">TECNOFOT</a>
+    <a href="#" class="header__logo"><img src="/logo.png" alt="Tecnofot SA"></a>
 
     <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
       <a href="/">Inicio</a>
@@ -96,6 +96,11 @@ const marcas = [
     text-decoration: none;
     color: var(--color-paper);
     transition: color 0.25s ease;
+  }
+
+  .header__logo img{
+    height: 40px;
+    width: auto;
   }
 
   .header.is-scrolled .header__logo {
