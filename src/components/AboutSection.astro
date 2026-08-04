@@ -85,7 +85,7 @@ const antiguedad = currentYear - anioFundacion;
     gap: 0.5rem;
     margin-top: 1.75rem;
     font-weight: 700;
-    color: var(--color-indigo);
+    color: var(--color-accent-text);
     text-decoration: none;
   }
 
@@ -123,8 +123,11 @@ const antiguedad = currentYear - anioFundacion;
     z-index: 2;
     left: 1.25rem;
     bottom: -1.25rem;
-    background: var(--color-indigo);
-    color: var(--color-paper);
+    /* Antes: fondo índigo + texto blanco. Ahora: fondo cyan (el
+       nuevo color de acento) + texto oscuro fijo, porque el cyan
+       es un color claro y "cyan + blanco" casi no se leería. */
+    background: var(--color-accent);
+    color: var(--color-on-accent);
     padding: 1rem 1.25rem;
     border-radius: 12px;
     box-shadow: var(--shadow-soft);
@@ -139,7 +142,8 @@ const antiguedad = currentYear - anioFundacion;
 
   .about__badge-label {
     font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-on-accent);
+    opacity: 0.75;
     max-width: 16ch;
   }
 

@@ -11,6 +11,8 @@
 // que vamos a crear en los próximos pasos (ej: /nosotros,
 // /servicios, /marcas/sharp). Por ahora esas páginas no existen
 // todavía -> eso lo resolvemos en el próximo paso.
+import ThemeToggle from './ThemeToggle.astro';
+
 const marcas = [
   { nombre: 'Sharp', slug: 'sharp' },
   { nombre: 'Brother', slug: 'brother' },
@@ -22,41 +24,57 @@ const marcas = [
 
 <header class="header" id="site-header">
   <div class="container header__row">
-    <a href="#" class="header__logo"><img src="/logo.png" alt="Tecnofot SA"></a>
+    <a href="/" class="header__logo">TECNOFOT</a>
 
-    <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
-      <a href="/">Inicio</a>
+    <!-- header__right agrupa nav + controles (toggle y hamburguesa)
+         y los alinea juntos contra el borde derecho. Si en vez de
+         esto pusiéramos nav y controles como dos hijos sueltos de
+         header__row con justify-content:space-between, el navegador
+         reparte el espacio EN PARTES IGUALES entre los 3 elementos
+         (logo / nav / controles), y el nav termina "flotando" lejos
+         del toggle en vez de pegado a "Contacto" como pediste. -->
+    
+    <div class="header__right">
+      <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
+        <a href="/">Inicio</a>
 
-      <div class="header__dropdown">
-        <button class="header__dropdown-trigger" aria-expanded="false" aria-haspopup="true">
-          Marcas
-          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div class="header__dropdown-menu">
-          {marcas.map((m) => (
-            <a target="_blank" rel="noopnener noreferer" href={`/marcas/${m.slug}`}>{m.nombre}</a>
-          ))}
+        <div class="header__dropdown">
+          <button class="header__dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+            Marcas
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="header__dropdown-menu">
+            <div class="header__dropdown-menu-inner">
+              {marcas.map((m) => (
+                <a href={`/marcas/${m.slug}`}>{m.nombre}</a>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <a href="/nosotros">Nosotros</a>
+        <a href="/servicios">Servicios</a>
+        <a href="/#contacto" class="header__cta">Contacto</a>
+      </nav>
+
+      <div class="header__controls">
+        <ThemeToggle />
+
+        <button
+          class="header__burger"
+          id="burger-btn"
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Abrir menú"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-
-      <a href="/nosotros">Nosotros</a>
-      <a href="/servicios">Servicios</a>
-      <a href="/#contacto" class="header__cta">Contacto</a>
-    </nav>
-
-    <button
-      class="header__burger"
-      id="burger-btn"
-      aria-controls="site-nav"
-      aria-expanded="false"
-      aria-label="Abrir menú"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    </div>
   </div>
 </header>
 
@@ -75,11 +93,15 @@ const marcas = [
     background: transparent;
   }
 
-  /* Clase que agrega el script cuando el usuario scrollea */
+  /* Clase que agrega el script cuando el usuario scrollea.
+     color-mix() mezcla var(--color-bg) con transparencia: como
+     --color-bg cambia según el tema (oscuro o claro), el header
+     "sólido" siempre queda del color correcto sin tener que
+     escribir un valor distinto a mano por tema. */
   .header.is-scrolled {
-    background: rgba(255, 255, 255, 0.92);
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
     backdrop-filter: blur(10px);
-    box-shadow: 0 1px 0 var(--color-line);
+    box-shadow: 0 1px 0 var(--color-border);
     padding-block: 0.7rem;
   }
 
@@ -87,6 +109,12 @@ const marcas = [
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .header__right {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
   }
 
   .header__logo {
@@ -98,13 +126,8 @@ const marcas = [
     transition: color 0.25s ease;
   }
 
-  .header__logo img{
-    height: 2.15em;
-    width: auto;
-  }
-
   .header.is-scrolled .header__logo {
-    color: var(--color-indigo);
+    color: var(--color-accent-text);
   }
 
   .header__nav {
@@ -126,7 +149,27 @@ const marcas = [
   }
 
   .header.is-scrolled .header__nav a {
-    color: var(--color-ink);
+    color: var(--color-text);
+  }
+
+  /* El trigger "Marcas" es un <button>, no un <a>, así que las dos
+     reglas de arriba (".header__nav a") no lo alcanzan -> antes
+     tenía "color: inherit" y terminaba heredando el color de texto
+     de la página (que cambia según el tema), en vez del blanco fijo
+     que usan los demás links mientras el header está transparente.
+     Por eso en modo claro se veía negro arriba del todo, cuando
+     debía verse blanco/clarito como "Inicio", "Nosotros", etc. */
+  .header__dropdown-trigger {
+    color: var(--color-paper);
+    transition: color 0.25s ease, opacity 0.15s ease;
+  }
+
+  .header__dropdown-trigger:hover {
+    opacity: 0.75;
+  }
+
+  .header.is-scrolled .header__dropdown-trigger {
+    color: var(--color-text);
   }
 
   .header__cta {
@@ -148,73 +191,100 @@ const marcas = [
     padding: 0;
     font: inherit;
     font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--color-paper);
-    transition: color 0.25s ease, opacity 0.15s ease;
-    cursor: pointer;
-  }
-
-  .header__dropdown-trigger:hover {
-    opacity: 0.75;
-  }
-
-  .header.is-scrolled .header__dropdown-trigger {
-    color: var(--color-ink);
   }
 
   .header__dropdown-menu {
     position: absolute;
-    top: calc(100% + 0.9rem);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-paper);
-    border-radius: 12px;
-    box-shadow: var(--shadow-soft);
-    padding: 0.5rem;
+    /* Antes: "top: calc(100% + 0.9rem)" dejaba un hueco de ~14px
+       entre el botón y el panel. Ese hueco no es parte de NINGÚN
+       elemento, así que al mover el mouse en diagonal desde el
+       botón hacia el panel, por una fracción de segundo el cursor
+       queda sobre "nada" -> el :hover se corta y el panel se
+       cierra antes de llegar. Por eso en la práctica parecía que
+       sólo se abría con click (que deja el foco puesto, y ahí sí
+       entra a tallar ":focus-within").
+       Ahora el panel arranca pegado al botón (top: 100%, sin
+       hueco) y el espacio visual lo da un padding-top: como el
+       padding sigue siendo parte del elemento, el mouse nunca
+       deja de estar "sobre" el dropdown mientras baja. */
+    top: 100%;
+    padding-top: 0.75rem;
     min-width: 190px;
-    display: grid;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.15s ease, transform 0.15s ease;
   }
 
   .header__dropdown:hover .header__dropdown-menu,
   .header__dropdown:focus-within .header__dropdown-menu {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+  }
+
+  /* La tarjeta visual (fondo, borde, sombra) vive en un div
+     aparte, DENTRO del "puente" de arriba, para que el
+     padding-top de arriba quede transparente en vez de mostrarse
+     como parte de la tarjeta. */
+  .header__dropdown-menu-inner {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    padding: 0.5rem;
+    display: grid;
   }
 
   .header__dropdown-menu a {
-    color: var(--color-ink) !important;
+    color: var(--color-text) !important;
     padding: 0.55rem 0.75rem;
     border-radius: 8px;
     font-weight: 500;
   }
 
   .header__dropdown-menu a:hover {
-    background: var(--color-mist);
+    background: var(--color-bg-alt);
     opacity: 1;
   }
 
-  /* --- Botón hamburguesa (solo visible en mobile) --- */
+  /* --- Controles de la derecha: toggle de tema + hamburguesa ---
+     --control-size fija la MISMA altura para ambos (pedido tuyo:
+     "del mismo alto que el hamburger menu"). Al ser una variable
+     CSS normal, ThemeToggle.astro también puede leerla aunque
+     esté en otro archivo: las custom properties viajan por el DOM
+     real, no les importa el "scoping" de estilos de Astro. */
+  .header__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem; /* "bien pegadito" al hamburger, como pediste */
+    --control-size: 34px;
+    color: var(--color-paper); /* estado transparente: ícono blanco sobre la foto del Hero */
+  }
+
+  .header.is-scrolled .header__controls {
+    color: var(--color-text); /* estado sólido: ícono según el tema activo */
+  }
+
+  /* --- Botón hamburguesa (solo visible en mobile) --- 
+  sin height para conservar diseño
+  */
   .header__burger {
     display: grid;
+    place-items: center;
     gap: 5px;
+    width: var(--control-size);
     background: none;
     border: none;
-    padding: 0.4rem;
+    padding: 0;
   }
 
   .header__burger span {
-    width: 22px;
+    width: 20px;
     height: 2px;
     background: var(--color-paper);
     transition: background 0.25s ease, transform 0.2s ease, opacity 0.2s ease;
   }
 
   .header.is-scrolled .header__burger span {
-    background: var(--color-ink);
+    background: var(--color-text);
   }
 
   /* --- Menú mobile desplegado --- */
@@ -227,22 +297,27 @@ const marcas = [
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--color-paper);
+    background: var(--color-bg);
     padding: 1.5rem 1.25rem 2rem;
     box-shadow: var(--shadow-soft);
   }
 
   .header__nav.is-open a {
-    color: var(--color-ink);
+    color: var(--color-text);
   }
 
   .header__nav.is-open .header__dropdown-menu {
     position: static;
+    padding-top: 0;
     opacity: 1;
     visibility: visible;
+  }
+
+  .header__nav.is-open .header__dropdown-menu-inner {
+    background: none;
+    border: none;
     box-shadow: none;
-    transform: none;
-    padding-left: 0.75rem;
+    padding: 0 0 0 0.75rem;
   }
 
   @media (min-width: 900px) {

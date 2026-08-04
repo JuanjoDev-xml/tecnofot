@@ -30,6 +30,10 @@
 interface Brand {
   name: string;
   logo: string;
+  // Opcional: por si en el futuro necesitás agrandar/achicar UN
+  // logo puntual sin tocar el tamaño base de todos los demás.
+  // 1 = tamaño normal, 1.4 = 40% más grande, 0.8 = 20% más chico.
+  scale?: number;
 }
 
 interface Props {
@@ -50,7 +54,12 @@ const track = [...brands, ...brands]; // duplicado para el loop infinito
   <div class="brands__viewport" role="group" aria-label="Marcas con las que trabajamos">
     <div class="brands__track">
       {track.map((b) => (
-        <a href={`/marcas/${b.name.toLowerCase().replace(/\s+/g, '-')}`} class="brands__item" aria-label={b.name}>
+        <a
+          href={`/marcas/${b.name.toLowerCase().replace(/\s+/g, '-')}`}
+          class="brands__item"
+          style={`--logo-scale: ${b.scale ?? 1}`}
+          aria-label={b.name}
+        >
           <img src={b.logo} alt={b.name} loading="lazy" />
         </a>
       ))}
@@ -62,6 +71,33 @@ const track = [...brands, ...brands]; // duplicado para el loop infinito
   .brands {
     padding-block: var(--space-section);
     overflow: hidden;
+    /* Fondo SIEMPRE blanco, sin importar el tema: la mayoría de
+       los logos de marca vienen pensados para fondo claro (texto
+       o detalles en negro/gris oscuro), así que si el sitio está
+       en modo oscuro y esta sección heredara el fondo oscuro de
+       la página, los logos se volverían ilegibles. Por eso NO
+       usamos --color-bg (que cambia con el tema) sino
+       --color-paper, que es un blanco fijo. */
+    background: var(--color-bg);
+  }
+
+  /* Como el fondo de esta sección es SIEMPRE blanco, el texto de
+     adentro también tiene que ser fijo (oscuro) en vez de seguir
+     el tema: si usáramos var(--color-text) normal, en modo
+     oscuro ese texto sería claro -> texto claro sobre fondo
+     blanco, ilegible. Esta regla tiene más especificidad que la
+     de global.css (Astro le agrega un atributo de "scoping" acá
+     adentro), así que gana sin necesitar !important. */
+  .brands__intro .eyebrow {
+    color: var(--color-cyan-dim);
+  }
+
+  .brands__title {
+    color: var(--color-text);
+  }
+
+  .brands__subtitle {
+    color: var(--color-ink-soft);
   }
 
   .brands__intro {
@@ -79,6 +115,7 @@ const track = [...brands, ...brands]; // duplicado para el loop infinito
   }
 
   .brands__viewport {
+    background: var(--color-paper);
     /* mask: difumina los bordes izquierdo/derecho para que las
        marcas "aparezcan/desaparezcan" en vez de cortarse feo */
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
@@ -109,13 +146,15 @@ const track = [...brands, ...brands]; // duplicado para el loop infinito
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 112px;
+    /* 112px = el tamaño base (antes 56px, ahora el doble) x
+       --logo-scale (1 por defecto, se puede pisar por marca) */
+    height: calc(112px * var(--logo-scale, 1));
   }
 
   .brands__item img {
     height: 100%;
     width: auto;
-    max-width: 300px;
+    max-width: calc(300px * var(--logo-scale, 1));
     object-fit: contain;
     /* Logos en escala de grises por defecto, color al pasar el
        mouse: mantiene la fila prolija y "seria" y da un pequeño
@@ -129,14 +168,24 @@ const track = [...brands, ...brands]; // duplicado para el loop infinito
     filter: grayscale(0) opacity(1);
   }
 
+  /* (hover: none) detecta dispositivos SIN capacidad de hover real
+     -> básicamente pantallas táctiles (celulares, tablets), sin
+     importar el ancho de pantalla. Es más preciso que un media
+     query por tamaño (ej. max-width: 768px), porque lo que nos
+     interesa es "¿este dispositivo puede hacer hover?" y no
+     "¿la pantalla es angosta?" (una notebook con pantalla táctil,
+     por ejemplo, sigue teniendo mouse). Ahí mostramos los logos
+     a color directamente, porque el usuario nunca va a poder
+     "pasar el mouse" para revelarlos. */
+  @media (hover: none) {
+    .brands__item img {
+      filter: none;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .brands__track {
       animation: none;
     }
   }
-  @media (hover: none) {
-  .brands__item img {
-    filter: none;
-  }
-}
 </style>

@@ -100,15 +100,15 @@ const FORM_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
     gap: 0.6rem;
     margin-top: 1.75rem;
     font-weight: 700;
-    color: var(--color-indigo);
+    color: var(--color-accent-text);
     text-decoration: none;
   }
 
   .contact__form {
     display: grid;
     gap: 1.1rem;
-    background: var(--color-paper);
-    border: 1px solid var(--color-line);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius);
     padding: clamp(1.5rem, 4vw, 2.25rem);
     box-shadow: var(--shadow-soft);
@@ -130,7 +130,7 @@ const FORM_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
   label {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--color-ink);
+    color: var(--color-text);
   }
 
   input,
@@ -139,9 +139,15 @@ const FORM_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
     font-size: 0.98rem;
     padding: 0.75rem 0.9rem;
     border-radius: 10px;
-    border: 1.5px solid var(--color-line);
-    background: var(--color-mist);
-    color: var(--color-ink);
+    /* Antes usaba var(--color-border), que en modo oscuro es un
+       gris casi del mismo tono que el fondo del input -> borde
+       invisible hasta hacer foco. Ahora el borde por defecto es
+       un cyan translúcido (se nota en fondo claro Y en fondo
+       oscuro), y al hacer foco pasa a un cyan sólido y más
+       fuerte para que se note claramente la diferencia. */
+    border: 1.5px solid color-mix(in srgb, var(--color-cyan) 45%, transparent);
+    background: var(--color-bg);
+    color: var(--color-text);
     resize: vertical;
     transition: border-color 0.15s ease, background 0.15s ease;
   }
@@ -149,8 +155,8 @@ const FORM_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
   input:focus,
   textarea:focus {
     outline: none;
-    border-color: var(--color-cyan-dim);
-    background: var(--color-paper);
+    border-color: var(--color-cyan);
+    background: var(--color-bg);
   }
 
   .contact__submit {
