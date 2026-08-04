@@ -375,6 +375,15 @@ const marcas = [
      altura y deja un hueco enorme. display:none lo saca del
      layout hasta que el usuario toca "Marcas". */
   @media (max-width: 899px) {
+    .header__nav.is-open {
+      /* 100% = alto del header (contenedor posicionado); el resto
+         del viewport queda para el panel scrolleable. */
+      max-height: calc(100dvh - 100%);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .header__nav.is-open .header__dropdown-menu {
       position: static;
       padding-top: 0;
