@@ -18,7 +18,12 @@ const marcas = [
   { nombre: 'Brother', slug: 'brother' },
   { nombre: 'Konica Minolta', slug: 'konica-minolta' },
   { nombre: 'Sindoh', slug: 'sindoh' },
-  { nombre: 'Rowe', slug: 'rowe' },
+  { nombre: 'Canon', slug: 'canon' },
+  { nombre: 'Develop', slug: 'develop' },
+  { nombre: 'Lexmark', slug: 'lexmark' },
+  { nombre: 'Epson', slug: 'epson' },
+  { nombre: 'HP', slug: 'hp' },
+
 ];
 ---
 
@@ -62,6 +67,10 @@ const marcas = [
       <div class="header__controls">
         <ThemeToggle />
 
+        <!-- Le agrego id extra "burger-btn" ya existía. Lo importante
+             acá es que en el JS de abajo le voy a sumar/sacar una
+             clase "is-active" cuando el menú está abierto. Esa clase
+             es la que dispara la animación de X en el CSS. -->
         <button
           class="header__burger"
           id="burger-btn"
@@ -99,7 +108,7 @@ const marcas = [
      "sólido" siempre queda del color correcto sin tener que
      escribir un valor distinto a mano por tema. */
   .header.is-scrolled {
-    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    background: color-mix(in srgb, var(--color-bg) 72%, transparent);
     backdrop-filter: blur(10px);
     box-shadow: 0 1px 0 var(--color-border);
     padding-block: 0.7rem;
@@ -280,11 +289,46 @@ const marcas = [
     width: 20px;
     height: 2px;
     background: var(--color-paper);
-    transition: background 0.25s ease, transform 0.2s ease, opacity 0.2s ease;
+    transition: background 0.25s ease, transform 0.25s ease, opacity 0.2s ease;
+    /* transform-origin: center es el default, pero lo dejo explícito
+       porque las rotaciones de abajo (la animación a X) giran cada
+       línea sobre su propio centro. Si el origin fuera otro, la X
+       quedaría descentrada. */
+    transform-origin: center;
   }
 
   .header.is-scrolled .header__burger span {
     background: var(--color-text);
+  }
+
+  /* --- Animación hamburguesa -> X ---
+     Las 3 líneas están en un grid con gap: 5px y cada una mide
+     2px de alto. Entonces el centro de la línea del medio queda a
+     (2px + 5px + 1px) = 8px de distancia del centro de la primera
+     línea (y lo mismo hacia la última, pero para arriba).
+     Para armar la X:
+       - Línea 1: la bajamos 8px (translateY) y la giramos 45°.
+       - Línea 2 (del medio): la hacemos desaparecer (opacity: 0).
+         Si no la ocultáramos, quedaría una rayita horizontal
+         cruzando el medio de la X, que se ve mal.
+       - Línea 3: la subimos 8px y la giramos -45° (para el otro
+         lado, así se cruza con la línea 1 formando la X).
+     Uso ":global()" porque estas clases (is-active) las agrega
+     el script de abajo con JS puro sobre el DOM ya renderizado,
+     y por default Astro "scopea" (le cambia el nombre por dentro)
+     a las clases definidas en este <style>. Sin :global, Astro
+     buscaría una clase con un nombre distinto al que el navegador
+     realmente tiene, y la regla nunca aplicaría. */
+  .header__burger.is-active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .header__burger.is-active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .header__burger.is-active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   /* --- Menú mobile desplegado --- */
@@ -340,6 +384,13 @@ const marcas = [
   const nav = document.getElementById('site-nav');
 
   const onScroll = () => {
+    // Si el menú mobile está abierto, no dejamos que el scroll
+    // le saque la clase "is-scrolled" al header: mientras el menú
+    // está desplegado siempre lo queremos "sólido" (fondo blanco/
+    // oscuro) para que el texto de los links se lea bien, sin
+    // importar en qué parte de la página estemos.
+    if (nav?.classList.contains('is-open')) return;
+
     if (window.scrollY > 12) {
       header?.classList.add('is-scrolled');
     } else {
@@ -349,12 +400,79 @@ const marcas = [
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  burger?.addEventListener('click', () => {
-    const isOpen = nav?.classList.toggle('is-open');
-    burger.setAttribute('aria-expanded', String(!!isOpen));
-    // Mientras el menú mobile está abierto, forzamos el header
-    // a verse "sólido" aunque estemos arriba del todo, para que
-    // el texto oscuro del menú se lea bien.
-    header?.classList.toggle('is-scrolled', !!isOpen);
+  // --- Abrir / cerrar el menú mobile ---
+  // Antes esto vivía "suelto" dentro del listener del burger.
+  // Lo separo en dos funciones (openMenu / closeMenu) porque
+  // ahora tenemos 3 formas distintas de cerrar el menú (tocar el
+  // botón de nuevo, tocar afuera, tocar un link), y no queremos
+  // repetir la misma lógica 3 veces -> si mañana hay que cambiar
+  // algo, se cambia en un solo lugar.
+  const openMenu = () => {
+    nav?.classList.add('is-open');
+    burger?.classList.add('is-active');
+    burger?.setAttribute('aria-expanded', 'true');
+    burger?.setAttribute('aria-label', 'Cerrar menú');
+    header?.classList.add('is-scrolled');
+  };
+
+  const closeMenu = () => {
+    nav?.classList.remove('is-open');
+    burger?.classList.remove('is-active');
+    burger?.setAttribute('aria-expanded', 'false');
+    burger?.setAttribute('aria-label', 'Abrir menú');
+    // Al cerrar, el header no tiene por qué volver a transparente
+    // a la fuerza: recalculamos según el scroll real de la
+    // página llamando de nuevo a onScroll().
+    onScroll();
+  };
+
+  burger?.addEventListener('click', (event) => {
+    // stopPropagation: sin esto, este mismo click seguiría
+    // "burbujeando" hasta el listener de document de más abajo
+    // (el de "cerrar al tocar afuera"), que vería un click fuera
+    // del <nav> y cerraría el menú al toque -> abrías y se
+    // cerraba en el mismo instante. stopPropagation corta la
+    // burbuja acá y evita ese choque entre los dos listeners.
+    event.stopPropagation();
+    const isOpen = nav?.classList.contains('is-open');
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  // --- Cerrar al tocar afuera del menú ---
+  // Escuchamos clicks en TODO el documento. Cada vez que el
+  // usuario toca cualquier parte de la página, nos preguntamos:
+  // ¿el menú está abierto? y ¿ese click fue fuera del <nav>?
+  // (el burger ya lo filtramos arriba con stopPropagation, así
+  // que acá "fuera del nav" alcanza).
+  // event.target es el elemento exacto que se tocó, y
+  // nav.contains(event.target) devuelve true si ese elemento
+  // está DENTRO del <nav> (incluye los links, el botón "Marcas",
+  // todo). Si no está adentro, es un click "afuera" -> cerramos.
+  document.addEventListener('click', (event) => {
+    if (!nav?.classList.contains('is-open')) return;
+    // event.target siempre es un nodo del DOM real (nunca null en
+    // un click), así que no hace falta castear tipos ni nada raro:
+    // simplemente le preguntamos al <nav> si ese nodo está adentro.
+    if (nav.contains(event.target)) return;
+    closeMenu();
+  });
+
+  // --- Cerrar al tocar un link ---
+  // querySelectorAll('a') trae TODOS los <a> que estén dentro del
+  // nav: "Inicio", "Nosotros", "Servicios", "Contacto" y también
+  // cada marca del dropdown (Sharp, Brother, etc). A cada uno le
+  // agregamos el mismo listener: cuando lo tocan, cerramos el
+  // menú. Ojo que el botón "Marcas" es un <button>, no un <a>, así
+  // que querySelectorAll('a') NO lo incluye -> tocarlo no cierra
+  // el menú, que es lo que queremos (es sólo un título, no navega
+  // a ningún lado).
+  nav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      closeMenu();
+    });
   });
 </script>
