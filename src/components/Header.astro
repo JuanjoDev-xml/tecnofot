@@ -29,7 +29,7 @@ const marcas = [
 
 <header class="header" id="site-header">
   <div class="container header__row">
-    <a href="/" class="header__logo">TECNOFOT</a>
+    <a href="/" class="header__logo"><img src="logo.png" alt="TECNOFOT SA"></a>
 
     <!-- header__right agrupa nav + controles (toggle y hamburguesa)
          y los alinea juntos contra el borde derecho. Si en vez de
@@ -108,7 +108,7 @@ const marcas = [
      "sólido" siempre queda del color correcto sin tener que
      escribir un valor distinto a mano por tema. */
   .header.is-scrolled {
-    background: color-mix(in srgb, var(--color-bg) 72%, transparent);
+    background: color-mix(in srgb, var(--color-bg) 80%, transparent);
     backdrop-filter: blur(10px);
     box-shadow: 0 1px 0 var(--color-border);
     padding-block: 0.7rem;
@@ -133,6 +133,9 @@ const marcas = [
     text-decoration: none;
     color: var(--color-paper);
     transition: color 0.25s ease;
+  }
+  .header__logo img{
+    height: 40px;
   }
 
   .header.is-scrolled .header__logo {
