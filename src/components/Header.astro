@@ -43,14 +43,21 @@ const marcas = [
       <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
         <a href="/">Inicio</a>
 
-        <div class="header__dropdown">
-          <button class="header__dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+        <div class="header__dropdown" id="brands-dropdown">
+          <button
+            class="header__dropdown-trigger"
+            id="brands-dropdown-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="brands-dropdown-menu"
+          >
             Marcas
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
               <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <div class="header__dropdown-menu">
+          <div class="header__dropdown-menu" id="brands-dropdown-menu">
             <div class="header__dropdown-menu-inner">
               {marcas.map((m) => (
                 <a href={`/marcas/${m.slug}`}>{m.nombre}</a>
@@ -226,10 +233,16 @@ const marcas = [
     visibility: hidden;
   }
 
-  .header__dropdown:hover .header__dropdown-menu,
-  .header__dropdown:focus-within .header__dropdown-menu {
-    opacity: 1;
-    visibility: visible;
+  /* En desktop abrimos con hover o foco (teclado / click).
+     En mobile no usamos estas reglas: ahí el menú se abre
+     sólo con la clase .is-open que agrega el script al tocar
+     "Marcas", porque no hay hover en pantallas táctiles. */
+  @media (min-width: 900px) {
+    .header__dropdown:hover .header__dropdown-menu,
+    .header__dropdown:focus-within .header__dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+    }
   }
 
   /* La tarjeta visual (fondo, borde, sombra) vive en un div
@@ -353,11 +366,34 @@ const marcas = [
     color: var(--color-text);
   }
 
-  .header__nav.is-open .header__dropdown-menu {
-    position: static;
-    padding-top: 0;
-    opacity: 1;
-    visibility: visible;
+  .header__nav.is-open .header__dropdown-trigger {
+    color: var(--color-text);
+  }
+
+  /* En mobile el submenú va en flujo normal (static), así que
+     si sólo lo ocultamos con opacity/visibility sigue ocupando
+     altura y deja un hueco enorme. display:none lo saca del
+     layout hasta que el usuario toca "Marcas". */
+  @media (max-width: 899px) {
+    .header__nav.is-open .header__dropdown-menu {
+      position: static;
+      padding-top: 0;
+      display: none;
+    }
+
+    .header__nav.is-open .header__dropdown.is-open .header__dropdown-menu {
+      display: block;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .header__dropdown.is-open .header__dropdown-trigger svg {
+    transform: rotate(180deg);
+  }
+
+  .header__dropdown-trigger svg {
+    transition: transform 0.2s ease;
   }
 
   .header__nav.is-open .header__dropdown-menu-inner {
@@ -385,6 +421,15 @@ const marcas = [
   const header = document.getElementById('site-header');
   const burger = document.getElementById('burger-btn');
   const nav = document.getElementById('site-nav');
+  const brandsDropdown = document.getElementById('brands-dropdown');
+  const brandsDropdownTrigger = document.getElementById('brands-dropdown-trigger');
+
+  const isMobileNav = () => window.matchMedia('(max-width: 899px)').matches;
+
+  const closeBrandsDropdown = () => {
+    brandsDropdown?.classList.remove('is-open');
+    brandsDropdownTrigger?.setAttribute('aria-expanded', 'false');
+  };
 
   const onScroll = () => {
     // Si el menú mobile está abierto, no dejamos que el scroll
@@ -423,6 +468,7 @@ const marcas = [
     burger?.classList.remove('is-active');
     burger?.setAttribute('aria-expanded', 'false');
     burger?.setAttribute('aria-label', 'Abrir menú');
+    closeBrandsDropdown();
     // Al cerrar, el header no tiene por qué volver a transparente
     // a la fuerza: recalculamos según el scroll real de la
     // página llamando de nuevo a onScroll().
@@ -464,15 +510,24 @@ const marcas = [
     closeMenu();
   });
 
+  // --- Abrir / cerrar el dropdown de marcas en mobile ---
+  brandsDropdownTrigger?.addEventListener('click', (event) => {
+    if (!isMobileNav() || !nav?.classList.contains('is-open')) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const isOpen = brandsDropdown?.classList.toggle('is-open');
+    brandsDropdownTrigger.setAttribute('aria-expanded', String(!!isOpen));
+  });
+
   // --- Cerrar al tocar un link ---
   // querySelectorAll('a') trae TODOS los <a> que estén dentro del
   // nav: "Inicio", "Nosotros", "Servicios", "Contacto" y también
   // cada marca del dropdown (Sharp, Brother, etc). A cada uno le
   // agregamos el mismo listener: cuando lo tocan, cerramos el
-  // menú. Ojo que el botón "Marcas" es un <button>, no un <a>, así
-  // que querySelectorAll('a') NO lo incluye -> tocarlo no cierra
-  // el menú, que es lo que queremos (es sólo un título, no navega
-  // a ningún lado).
+  // menú. El botón "Marcas" es un <button>: en mobile abre/cierra
+  // el submenú de marcas sin cerrar todo el nav.
   nav?.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', () => {
       closeMenu();
