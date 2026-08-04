@@ -15,185 +15,259 @@
    que puede caerse o que trackea al visitante, y (2) al ser
    parte del build, el navegador la descarga junto con el
    resto del sitio sin conexiones extra a googleapis.com. */
-@import '@fontsource-variable/manrope/wght.css';
+   @import '@fontsource-variable/manrope/wght.css';
 
-:root {
-  /* --- Color: paleta de marca + neutros de apoyo ---
-     El cliente definió el cyan (primario) y el índigo
-     (secundario). Yo agregué los neutros: no son "grises
-     de Bootstrap", tienen un leve tinte azulado para que
-     combinen con la paleta en vez de sentirse genéricos. */
-  --color-cyan: #77ceef;       /* primario: acentos, hovers, detalles */
-  --color-cyan-dim: #5bb9dd;   /* variante un poco más oscura, para texto sobre blanco (contraste AA) */
-  --color-indigo: #2e3092;     /* secundario: CTAs, títulos, secciones oscuras */
-  --color-indigo-deep: #21235f;/* variante más oscura, para overlays y hover de botones */
-  --color-ink: #14161f;        /* "negro" del sitio: nunca #000 puro, se ve más cálido */
-  --color-ink-soft: #4b5166;   /* texto secundario / párrafos largos */
-  --color-paper: #ffffff;
-  --color-mist: #f3f7fa;       /* fondo alterno de sección, tinte frío coherente con el cyan */
-  --color-line: #e1e7ee;       /* bordes y divisores sutiles */
-
-  /* --- Tipografía: UNA sola familia en todo el sitio,
-     como pidió el cliente. Lo que cambia es el peso (weight)
-     y el tracking, no la fuente. Así el título grande y el
-     texto chico se sienten de la misma familia visual. */
-  --font-base: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
-
-  --fs-h1: clamp(2.25rem, 5vw + 1rem, 4rem);
-  --fs-h2: clamp(1.75rem, 3vw + 1rem, 2.75rem);
-  --fs-h3: clamp(1.25rem, 1.5vw + 1rem, 1.5rem);
-  --fs-body: 1rem;
-  --fs-small: 0.875rem;
-
-  /* --- Layout --- */
-  --container-w: 1180px;
-  --space-section: clamp(3.5rem, 8vw, 7rem); /* padding vertical entre secciones */
-  --radius: 14px;
-
-  --shadow-soft: 0 20px 40px -20px rgba(20, 22, 31, 0.18);
-}
-
-/* --- Reset mínimo ---
-   No uso un reset gigante tipo "Normalize" completo porque
-   no lo necesitamos: con estas pocas líneas alcanza para que
-   márgenes por defecto del navegador no nos arruinen el layout. */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth; /* para que el botón "Conózcanos" scrollee suave */
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-base);
-  font-weight: 400;
-  color: var(--color-ink);
-  background: var(--color-paper);
-  -webkit-font-smoothing: antialiased;
-}
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-h1, h2, h3, h4 {
-  margin: 0;
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
-}
-
-p {
-  margin: 0;
-  color: var(--color-ink-soft);
-  line-height: 1.6;
-}
-
-a {
-  color: inherit;
-}
-
-/* Nunca cursiva/itálica en todo el sitio, tal cual pidió el cliente */
-em, i, cite {
-  font-style: normal;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-/* --- Utilidades compartidas por varias secciones ---
-   Las pongo acá (y no repetidas en cada componente) porque
-   Header, Hero, "Nuestra empresa", etc. todas necesitan
-   "centrar el contenido a 1180px" o "separar secciones". */
-.container {
-  width: 100%;
-  max-width: var(--container-w);
-  margin-inline: auto;
-  padding-inline: 1.25rem;
-}
-
-.section {
-  padding-block: var(--space-section);
-}
-
-.section--alt {
-  background: var(--color-mist);
-}
-
-.eyebrow {
-  display: inline-block;
-  font-size: var(--fs-small);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-indigo);
-  margin-bottom: 0.75rem;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.9rem 1.6rem;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: var(--fs-body);
-  text-decoration: none;
-  border: 1.5px solid transparent;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-/* CTA principal: WhatsApp. Verde de WhatsApp deliberadamente
-   NO se usa: el cliente pidió una interfaz seria y consistente
-   con su paleta, así que el botón de WhatsApp lleva el índigo
-   de marca (con el ícono como única referencia a WhatsApp). */
-.btn--primary {
-  background: var(--color-indigo);
-  color: var(--color-paper);
-  box-shadow: var(--shadow-soft);
-}
-
-.btn--primary:hover {
-  background: var(--color-indigo-deep);
-}
-
-/* CTA secundario: contorno, para que no compita con el principal */
-.btn--secondary {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.55);
-  color: var(--color-paper);
-}
-
-.btn--secondary:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-/* Foco visible para navegación por teclado (accesibilidad).
-   Muchos sitios lo eliminan por estética y rompen la usabilidad
-   para quien navega con teclado o lector de pantalla. */
-:focus-visible {
-  outline: 2.5px solid var(--color-cyan);
-  outline-offset: 3px;
-}
-
-/* Respeta a quienes configuraron "reducir movimiento" en su SO */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+   :root {
+     /* --- Color de marca (fijo, no cambia con el tema) ---
+        El cyan es el primario de marca y el índigo el secundario;
+        estos dos NO dependen de si el sitio está en modo claro u
+        oscuro, son la identidad visual en cualquier caso. */
+     --color-cyan: #77ceef;
+     --color-cyan-dim: #5bb9dd;    /* variante más oscura del cyan, para usarlo como TEXTO legible sobre fondos claros */
+     --color-indigo: #2e3092;
+     --color-indigo-deep: #21235f;
+   
+     /* --color-accent es el color de marca que usamos para CTAs,
+        links destacados e íconos: antes era el índigo, ahora es el
+        cyan (pedido del cliente), porque el índigo se apaga en un
+        fondo oscuro y el cyan es, además, el color principal de
+        marca. Como el cyan es un tono claro, para texto CHICO sobre
+        fondos claros usamos --color-accent-text (más oscuro, para
+        que se siga leyendo bien) en vez del cyan puro. */
+     --color-accent: var(--color-cyan);
+     --color-accent-hover: var(--color-cyan-dim);
+     /* Texto/ícono que va ENCIMA de un fondo cyan (botones, badges).
+        Al ser el cyan siempre un tono claro, este texto siempre
+        tiene que ser oscuro para leerse, sin importar el tema del
+        sitio -> por eso usa el índigo oscuro fijo, no un token que
+        cambie con el tema. */
+     --color-on-accent: var(--color-indigo-deep);
+   
+     /* --- Blanco y negro FIJOS (no cambian con el tema) ---
+        Estos dos se usan solo donde el color depende del CONTEXTO
+        (una foto de fondo, un footer siempre oscuro), no de si el
+        sitio está en claro/oscuro. Por eso no van dentro del
+        sistema de tema de más abajo. */
+     --color-paper: #ffffff;      /* texto/íconos sobre fotos oscuras (Hero, Header transparente), footer */
+     --color-ink: #14161f;        /* fondo fijo y siempre oscuro del footer */
+   
+     /* --- Tipografía: UNA sola familia en todo el sitio,
+        como pidió el cliente. Lo que cambia es el peso (weight)
+        y el tracking, no la fuente. Así el título grande y el
+        texto chico se sienten de la misma familia visual. */
+     --font-base: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+   
+     --fs-h1: clamp(2.25rem, 5vw + 1rem, 4rem);
+     --fs-h2: clamp(1.75rem, 3vw + 1rem, 2.75rem);
+     --fs-h3: clamp(1.25rem, 1.5vw + 1rem, 1.5rem);
+     --fs-body: 1rem;
+     --fs-small: 0.875rem;
+   
+     /* --- Layout --- */
+     --container-w: 1180px;
+     --space-section: clamp(3.5rem, 8vw, 7rem); /* padding vertical entre secciones */
+     --radius: 14px;
+   
+     --shadow-soft: 0 20px 40px -20px rgba(20, 22, 31, 0.18);
+   }
+   
+   /* ============================================================
+      TEMA CLARO / OSCURO
+      ------------------------------------------------------------
+      Estos son los tokens que SÍ cambian según el tema: fondo de
+      página, fondo alterno de sección, bordes y color de texto.
+      Los defino en dos grupos:
+   
+      1) Los valores DENTRO de :root son los que se usan cuando
+         <html> todavía no tiene el atributo data-theme (o sea,
+         antes de que cargue el script) -> por eso son los valores
+         OSCUROS: así el default real del sitio es oscuro, tal
+         como pediste, sin depender de JavaScript.
+      2) [data-theme='light'] pisa esos valores cuando el script
+         (ver ThemeToggle.astro) detecta que el usuario eligió el
+         tema claro (o no hay nada guardado y el sistema... en
+         este caso no miramos preferencia del sistema operativo a
+         propósito, porque el default pedido es "siempre oscuro").
+      ============================================================ */
+   :root {
+     --color-bg: #0f1117;         /* fondo de la página */
+     --color-bg-alt: #171a23;     /* fondo de sección alterna / tarjetas */
+     --color-border: #2a2e3b;     /* bordes y divisores */
+     --color-text: #eef1f6;       /* títulos y texto principal */
+     --color-text-soft: #a4abbf;  /* texto secundario / párrafos */
+   
+     /* En fondo oscuro, el cyan puro ya se lee perfecto como texto
+        chico (links, "eyebrow"), así que acá no hace falta la
+        variante más oscura. */
+     --color-accent-text: var(--color-cyan);
+   }
+   
+   [data-theme='light'] {
+     --color-bg: #ffffff;
+     --color-bg-alt: #f3f7fa;
+     --color-border: #e1e7ee;
+     --color-text: #14161f;
+     --color-text-soft: #4b5166;
+   
+     /* Sobre fondo blanco, el cyan puro pierde contraste como
+        texto -> usamos la variante más oscura (cyan-dim). */
+     --color-accent-text: var(--color-cyan-dim);
+   }
+   
+   /* Transición suave al togglear el tema, en vez de un cambio
+      brusco de golpe. */
+   body, .header, .brands__item img {
+     transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+   }
+   
+   /* --- Reset mínimo ---
+      No uso un reset gigante tipo "Normalize" completo porque
+      no lo necesitamos: con estas pocas líneas alcanza para que
+      márgenes por defecto del navegador no nos arruinen el layout. */
+   *, *::before, *::after {
+     box-sizing: border-box;
+   }
+   
+   html {
+     scroll-behavior: smooth; /* para que el botón "Conózcanos" scrollee suave */
+   }
+   
+   body {
+     margin: 0;
+     font-family: var(--font-base);
+     font-weight: 400;
+     color: var(--color-text);
+     background: var(--color-bg);
+     -webkit-font-smoothing: antialiased;
+   }
+   
+   img {
+     max-width: 100%;
+     display: block;
+   }
+   
+   h1, h2, h3, h4 {
+     margin: 0;
+     font-weight: 800;
+     line-height: 1.08;
+     letter-spacing: -0.02em;
+     color: var(--color-text);
+   }
+   
+   p {
+     margin: 0;
+     color: var(--color-text-soft);
+     line-height: 1.6;
+   }
+   
+   a {
+     color: inherit;
+   }
+   
+   /* Nunca cursiva/itálica en todo el sitio, tal cual pidió el cliente */
+   em, i, cite {
+     font-style: normal;
+   }
+   
+   button {
+     font-family: inherit;
+     cursor: pointer;
+   }
+   
+   /* --- Utilidades compartidas por varias secciones ---
+      Las pongo acá (y no repetidas en cada componente) porque
+      Header, Hero, "Nuestra empresa", etc. todas necesitan
+      "centrar el contenido a 1180px" o "separar secciones". */
+   .container {
+     width: 100%;
+     max-width: var(--container-w);
+     margin-inline: auto;
+     padding-inline: 1.25rem;
+   }
+   
+   .section {
+     padding-block: var(--space-section);
+   }
+   
+   .section--alt {
+     background: var(--color-bg-alt);
+   }
+   
+   .eyebrow {
+     display: inline-block;
+     font-size: var(--fs-small);
+     font-weight: 700;
+     letter-spacing: 0.08em;
+     text-transform: uppercase;
+     color: var(--color-accent-text);
+     margin-bottom: 0.75rem;
+   }
+   
+   .btn {
+     display: inline-flex;
+     align-items: center;
+     gap: 0.5rem;
+     padding: 0.9rem 1.6rem;
+     border-radius: 999px;
+     font-weight: 700;
+     font-size: var(--fs-body);
+     text-decoration: none;
+     border: 1.5px solid transparent;
+     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+   }
+   
+   .btn:active {
+     transform: translateY(1px);
+   }
+   
+   /* CTA principal: WhatsApp. Verde de WhatsApp deliberadamente
+      NO se usa: el cliente pidió una interfaz seria y consistente
+      con su paleta, así que el botón de WhatsApp lleva el cyan
+      de marca (con el ícono como única referencia a WhatsApp).
+      Antes este botón usaba el índigo, pero el índigo se apagaba
+      sobre fondo oscuro; el cyan, al ser el color principal de
+      marca, además se lee mucho mejor en modo oscuro.
+      Ojo con el contraste: el cyan es un color CLARO, así que el
+      texto de encima usa --color-on-accent (un índigo oscuro fijo)
+      en vez de blanco -> "cyan bg + texto blanco" tendría muy poco
+      contraste y sería difícil de leer. */
+   .btn--primary {
+     background: var(--color-accent);
+     color: var(--color-on-accent);
+     box-shadow: var(--shadow-soft);
+   }
+   
+   .btn--primary:hover {
+     background: var(--color-accent-hover);
+   }
+   
+   /* CTA secundario: contorno, para que no compita con el principal */
+   .btn--secondary {
+     background: rgba(255, 255, 255, 0.08);
+     border-color: rgba(255, 255, 255, 0.55);
+     color: var(--color-paper);
+   }
+   
+   .btn--secondary:hover {
+     background: rgba(255, 255, 255, 0.18);
+   }
+   
+   /* Foco visible para navegación por teclado (accesibilidad).
+      Muchos sitios lo eliminan por estética y rompen la usabilidad
+      para quien navega con teclado o lector de pantalla. */
+   :focus-visible {
+     outline: 2.5px solid var(--color-cyan);
+     outline-offset: 3px;
+   }
+   
+   /* Respeta a quienes configuraron "reducir movimiento" en su SO */
+   @media (prefers-reduced-motion: reduce) {
+     html {
+       scroll-behavior: auto;
+     }
+     *, *::before, *::after {
+       animation-duration: 0.01ms !important;
+       animation-iteration-count: 1 !important;
+       transition-duration: 0.01ms !important;
+     }
+   }

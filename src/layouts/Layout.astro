@@ -39,6 +39,34 @@ const {
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
+
+    <!--
+      Script "anti-flash" del tema.
+      -----------------------------------------------------------
+      Por qué existe ESTE script, separado del de ThemeToggle.astro:
+
+      Sin él, la secuencia sería: (1) la página carga y se pinta
+      con el tema oscuro por defecto (los valores base de
+      :root en global.css), (2) recién después se ejecuta el
+      script de ThemeToggle, lee localStorage, y si el usuario
+      había elegido "claro" ahí recién cambia el atributo. Ese
+      "recién después" alcanza a pintarse en pantalla -> el
+      usuario ve un flash oscuro que enseguida cambia a claro.
+
+      Este script en cambio corre ACÁ, arriba de todo el <head>,
+      de forma síncrona (is:inline evita que Astro lo mueva o lo
+      difiera) -> el navegador lo ejecuta antes de pintar nada,
+      así que el atributo data-theme ya está bien puesto desde
+      el primer frame. Es la misma técnica que usan la mayoría
+      de los sitios con modo oscuro/claro.
+    -->
+    <script is:inline>
+      (function () {
+        var saved = localStorage.getItem('tecnofot-theme');
+        var theme = saved === 'light' ? 'light' : 'dark'; // dark = default pedido
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <Header />

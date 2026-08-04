@@ -1,0 +1,106 @@
+---
+// ThemeToggle.astro
+// -----------------------------------------------------------
+// Botón chico y circular que alterna --data-theme entre 'dark'
+// y 'light' sobre el elemento <html>. Todo el sitio ya está
+// armado para reaccionar a ese atributo (ver el bloque "TEMA
+// CLARO / OSCURO" en global.css), así que este componente NO
+// necesita saber nada de colores: solo prende/apaga el atributo
+// y lo guarda en localStorage para la próxima visita.
+//
+// ¿Por qué el ícono usa currentColor y no un color fijo?
+// Porque así hereda automáticamente el color correcto según el
+// estado del Header (blanco sobre la foto del Hero, o el color
+// de texto del tema una vez que el Header queda "sólido"), sin
+// que este componente tenga que enterarse de esos detalles.
+---
+
+<button
+  type="button"
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="Cambiar tema claro/oscuro"
+>
+  <!-- Sol: visible cuando el tema activo es OSCURO (indica "tocá
+       para pasar a claro"). Luna: visible cuando el tema es CLARO. -->
+  <svg class="icon icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>
+  <svg class="icon icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.7 6.7 0 1 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    /* --control-size lo define Header.astro en .header__controls;
+       si este componente se usa en otro lugar sin ese padre, cae
+       en 34px por defecto gracias al segundo valor de var(). */
+    width: var(--control-size, 34px);
+    height: var(--control-size, 34px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    color: inherit; /* hereda de .header__controls: blanco o color de texto del tema */
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .theme-toggle:hover {
+    background: color-mix(in srgb, currentColor 18%, transparent);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.92);
+  }
+
+  .icon {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s ease, transform 0.3s ease;
+  }
+
+  /* Por defecto (sin JS, o mientras carga) el sitio arranca en
+     oscuro -> mostramos la luna (sol oculto). El script de abajo
+     ajusta esto apenas sabe si hay una preferencia guardada. */
+  .icon-sun {
+    opacity: 0;
+    transform: rotate(-40deg) scale(0.6);
+  }
+
+  .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  /* :global() acá es necesario porque data-theme vive en <html>,
+     que está FUERA del árbol de este componente; sin :global()
+     Astro le agregaría un atributo de "scoping" a este selector
+     y nunca matchearía con el <html> real de la página. */
+  :global(html[data-theme='light']) .theme-toggle .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  :global(html[data-theme='light']) .theme-toggle .icon-moon {
+    opacity: 0;
+    transform: rotate(40deg) scale(0.6);
+  }
+</style>
+
+<script>
+  // Guardamos la preferencia con esta clave; el mismo nombre lo
+  // usa el script "anti-flash" en Layout.astro (ver ese archivo
+  // para el porqué de ese script aparte).
+  const STORAGE_KEY = 'tecnofot-theme';
+
+  const button = document.getElementById('theme-toggle');
+
+  button?.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const next = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem(STORAGE_KEY, next);
+  });
+</script>

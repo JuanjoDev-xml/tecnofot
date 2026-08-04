@@ -11,52 +11,79 @@
 // que vamos a crear en los próximos pasos (ej: /nosotros,
 // /servicios, /marcas/sharp). Por ahora esas páginas no existen
 // todavía -> eso lo resolvemos en el próximo paso.
+import ThemeToggle from './ThemeToggle.astro';
+
 const marcas = [
   { nombre: 'Sharp', slug: 'sharp' },
   { nombre: 'Brother', slug: 'brother' },
   { nombre: 'Konica Minolta', slug: 'konica-minolta' },
   { nombre: 'Sindoh', slug: 'sindoh' },
-  { nombre: 'Rowe', slug: 'rowe' },
+  { nombre: 'Canon', slug: 'canon' },
+  { nombre: 'Develop', slug: 'develop' },
+  { nombre: 'Lexmark', slug: 'lexmark' },
+  { nombre: 'Epson', slug: 'epson' },
+  { nombre: 'HP', slug: 'hp' },
+
 ];
 ---
 
 <header class="header" id="site-header">
   <div class="container header__row">
-    <a href="#" class="header__logo"><img src="/logo.png" alt="Tecnofot SA"></a>
+    <a href="/" class="header__logo">TECNOFOT</a>
 
-    <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
-      <a href="/">Inicio</a>
+    <!-- header__right agrupa nav + controles (toggle y hamburguesa)
+         y los alinea juntos contra el borde derecho. Si en vez de
+         esto pusiéramos nav y controles como dos hijos sueltos de
+         header__row con justify-content:space-between, el navegador
+         reparte el espacio EN PARTES IGUALES entre los 3 elementos
+         (logo / nav / controles), y el nav termina "flotando" lejos
+         del toggle en vez de pegado a "Contacto" como pediste. -->
+    
+    <div class="header__right">
+      <nav class="header__nav" id="site-nav" aria-label="Navegación principal">
+        <a href="/">Inicio</a>
 
-      <div class="header__dropdown">
-        <button class="header__dropdown-trigger" aria-expanded="false" aria-haspopup="true">
-          Marcas
-          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div class="header__dropdown-menu">
-          {marcas.map((m) => (
-            <a target="_blank" rel="noopnener noreferer" href={`/marcas/${m.slug}`}>{m.nombre}</a>
-          ))}
+        <div class="header__dropdown">
+          <button class="header__dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+            Marcas
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="header__dropdown-menu">
+            <div class="header__dropdown-menu-inner">
+              {marcas.map((m) => (
+                <a href={`/marcas/${m.slug}`}>{m.nombre}</a>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <a href="/nosotros">Nosotros</a>
+        <a href="/servicios">Servicios</a>
+        <a href="/#contacto" class="header__cta">Contacto</a>
+      </nav>
+
+      <div class="header__controls">
+        <ThemeToggle />
+
+        <!-- Le agrego id extra "burger-btn" ya existía. Lo importante
+             acá es que en el JS de abajo le voy a sumar/sacar una
+             clase "is-active" cuando el menú está abierto. Esa clase
+             es la que dispara la animación de X en el CSS. -->
+        <button
+          class="header__burger"
+          id="burger-btn"
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Abrir menú"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-
-      <a href="/nosotros">Nosotros</a>
-      <a href="/servicios">Servicios</a>
-      <a href="/#contacto" class="header__cta">Contacto</a>
-    </nav>
-
-    <button
-      class="header__burger"
-      id="burger-btn"
-      aria-controls="site-nav"
-      aria-expanded="false"
-      aria-label="Abrir menú"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    </div>
   </div>
 </header>
 
@@ -75,11 +102,15 @@ const marcas = [
     background: transparent;
   }
 
-  /* Clase que agrega el script cuando el usuario scrollea */
+  /* Clase que agrega el script cuando el usuario scrollea.
+     color-mix() mezcla var(--color-bg) con transparencia: como
+     --color-bg cambia según el tema (oscuro o claro), el header
+     "sólido" siempre queda del color correcto sin tener que
+     escribir un valor distinto a mano por tema. */
   .header.is-scrolled {
-    background: rgba(255, 255, 255, 0.92);
+    background: color-mix(in srgb, var(--color-bg) 72%, transparent);
     backdrop-filter: blur(10px);
-    box-shadow: 0 1px 0 var(--color-line);
+    box-shadow: 0 1px 0 var(--color-border);
     padding-block: 0.7rem;
   }
 
@@ -87,6 +118,12 @@ const marcas = [
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .header__right {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
   }
 
   .header__logo {
@@ -98,13 +135,8 @@ const marcas = [
     transition: color 0.25s ease;
   }
 
-  .header__logo img{
-    height: 40px;
-    width: auto;
-  }
-
   .header.is-scrolled .header__logo {
-    color: var(--color-indigo);
+    color: var(--color-accent-text);
   }
 
   .header__nav {
@@ -126,7 +158,27 @@ const marcas = [
   }
 
   .header.is-scrolled .header__nav a {
-    color: var(--color-ink);
+    color: var(--color-text);
+  }
+
+  /* El trigger "Marcas" es un <button>, no un <a>, así que las dos
+     reglas de arriba (".header__nav a") no lo alcanzan -> antes
+     tenía "color: inherit" y terminaba heredando el color de texto
+     de la página (que cambia según el tema), en vez del blanco fijo
+     que usan los demás links mientras el header está transparente.
+     Por eso en modo claro se veía negro arriba del todo, cuando
+     debía verse blanco/clarito como "Inicio", "Nosotros", etc. */
+  .header__dropdown-trigger {
+    color: var(--color-paper);
+    transition: color 0.25s ease, opacity 0.15s ease;
+  }
+
+  .header__dropdown-trigger:hover {
+    opacity: 0.75;
+  }
+
+  .header.is-scrolled .header__dropdown-trigger {
+    color: var(--color-text);
   }
 
   .header__cta {
@@ -148,73 +200,135 @@ const marcas = [
     padding: 0;
     font: inherit;
     font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--color-paper);
-    transition: color 0.25s ease, opacity 0.15s ease;
-    cursor: pointer;
-  }
-
-  .header__dropdown-trigger:hover {
-    opacity: 0.75;
-  }
-
-  .header.is-scrolled .header__dropdown-trigger {
-    color: var(--color-ink);
   }
 
   .header__dropdown-menu {
     position: absolute;
-    top: calc(100% + 0.9rem);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-paper);
-    border-radius: 12px;
-    box-shadow: var(--shadow-soft);
-    padding: 0.5rem;
+    /* Antes: "top: calc(100% + 0.9rem)" dejaba un hueco de ~14px
+       entre el botón y el panel. Ese hueco no es parte de NINGÚN
+       elemento, así que al mover el mouse en diagonal desde el
+       botón hacia el panel, por una fracción de segundo el cursor
+       queda sobre "nada" -> el :hover se corta y el panel se
+       cierra antes de llegar. Por eso en la práctica parecía que
+       sólo se abría con click (que deja el foco puesto, y ahí sí
+       entra a tallar ":focus-within").
+       Ahora el panel arranca pegado al botón (top: 100%, sin
+       hueco) y el espacio visual lo da un padding-top: como el
+       padding sigue siendo parte del elemento, el mouse nunca
+       deja de estar "sobre" el dropdown mientras baja. */
+    top: 100%;
+    padding-top: 0.75rem;
     min-width: 190px;
-    display: grid;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.15s ease, transform 0.15s ease;
   }
 
   .header__dropdown:hover .header__dropdown-menu,
   .header__dropdown:focus-within .header__dropdown-menu {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+  }
+
+  /* La tarjeta visual (fondo, borde, sombra) vive en un div
+     aparte, DENTRO del "puente" de arriba, para que el
+     padding-top de arriba quede transparente en vez de mostrarse
+     como parte de la tarjeta. */
+  .header__dropdown-menu-inner {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    padding: 0.5rem;
+    display: grid;
   }
 
   .header__dropdown-menu a {
-    color: var(--color-ink) !important;
+    color: var(--color-text) !important;
     padding: 0.55rem 0.75rem;
     border-radius: 8px;
     font-weight: 500;
   }
 
   .header__dropdown-menu a:hover {
-    background: var(--color-mist);
+    background: var(--color-bg-alt);
     opacity: 1;
   }
 
-  /* --- Botón hamburguesa (solo visible en mobile) --- */
+  /* --- Controles de la derecha: toggle de tema + hamburguesa ---
+     --control-size fija la MISMA altura para ambos (pedido tuyo:
+     "del mismo alto que el hamburger menu"). Al ser una variable
+     CSS normal, ThemeToggle.astro también puede leerla aunque
+     esté en otro archivo: las custom properties viajan por el DOM
+     real, no les importa el "scoping" de estilos de Astro. */
+  .header__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem; /* "bien pegadito" al hamburger, como pediste */
+    --control-size: 34px;
+    color: var(--color-paper); /* estado transparente: ícono blanco sobre la foto del Hero */
+  }
+
+  .header.is-scrolled .header__controls {
+    color: var(--color-text); /* estado sólido: ícono según el tema activo */
+  }
+
+  /* --- Botón hamburguesa (solo visible en mobile) --- 
+  sin height para conservar diseño
+  */
   .header__burger {
     display: grid;
+    place-items: center;
     gap: 5px;
+    width: var(--control-size);
     background: none;
     border: none;
-    padding: 0.4rem;
+    padding: 0;
   }
 
   .header__burger span {
-    width: 22px;
+    width: 20px;
     height: 2px;
     background: var(--color-paper);
-    transition: background 0.25s ease, transform 0.2s ease, opacity 0.2s ease;
+    transition: background 0.25s ease, transform 0.25s ease, opacity 0.2s ease;
+    /* transform-origin: center es el default, pero lo dejo explícito
+       porque las rotaciones de abajo (la animación a X) giran cada
+       línea sobre su propio centro. Si el origin fuera otro, la X
+       quedaría descentrada. */
+    transform-origin: center;
   }
 
   .header.is-scrolled .header__burger span {
-    background: var(--color-ink);
+    background: var(--color-text);
+  }
+
+  /* --- Animación hamburguesa -> X ---
+     Las 3 líneas están en un grid con gap: 5px y cada una mide
+     2px de alto. Entonces el centro de la línea del medio queda a
+     (2px + 5px + 1px) = 8px de distancia del centro de la primera
+     línea (y lo mismo hacia la última, pero para arriba).
+     Para armar la X:
+       - Línea 1: la bajamos 8px (translateY) y la giramos 45°.
+       - Línea 2 (del medio): la hacemos desaparecer (opacity: 0).
+         Si no la ocultáramos, quedaría una rayita horizontal
+         cruzando el medio de la X, que se ve mal.
+       - Línea 3: la subimos 8px y la giramos -45° (para el otro
+         lado, así se cruza con la línea 1 formando la X).
+     Uso ":global()" porque estas clases (is-active) las agrega
+     el script de abajo con JS puro sobre el DOM ya renderizado,
+     y por default Astro "scopea" (le cambia el nombre por dentro)
+     a las clases definidas en este <style>. Sin :global, Astro
+     buscaría una clase con un nombre distinto al que el navegador
+     realmente tiene, y la regla nunca aplicaría. */
+  .header__burger.is-active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .header__burger.is-active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .header__burger.is-active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   /* --- Menú mobile desplegado --- */
@@ -227,22 +341,27 @@ const marcas = [
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--color-paper);
+    background: var(--color-bg);
     padding: 1.5rem 1.25rem 2rem;
     box-shadow: var(--shadow-soft);
   }
 
   .header__nav.is-open a {
-    color: var(--color-ink);
+    color: var(--color-text);
   }
 
   .header__nav.is-open .header__dropdown-menu {
     position: static;
+    padding-top: 0;
     opacity: 1;
     visibility: visible;
+  }
+
+  .header__nav.is-open .header__dropdown-menu-inner {
+    background: none;
+    border: none;
     box-shadow: none;
-    transform: none;
-    padding-left: 0.75rem;
+    padding: 0 0 0 0.75rem;
   }
 
   @media (min-width: 900px) {
@@ -265,6 +384,13 @@ const marcas = [
   const nav = document.getElementById('site-nav');
 
   const onScroll = () => {
+    // Si el menú mobile está abierto, no dejamos que el scroll
+    // le saque la clase "is-scrolled" al header: mientras el menú
+    // está desplegado siempre lo queremos "sólido" (fondo blanco/
+    // oscuro) para que el texto de los links se lea bien, sin
+    // importar en qué parte de la página estemos.
+    if (nav?.classList.contains('is-open')) return;
+
     if (window.scrollY > 12) {
       header?.classList.add('is-scrolled');
     } else {
@@ -274,12 +400,79 @@ const marcas = [
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  burger?.addEventListener('click', () => {
-    const isOpen = nav?.classList.toggle('is-open');
-    burger.setAttribute('aria-expanded', String(!!isOpen));
-    // Mientras el menú mobile está abierto, forzamos el header
-    // a verse "sólido" aunque estemos arriba del todo, para que
-    // el texto oscuro del menú se lea bien.
-    header?.classList.toggle('is-scrolled', !!isOpen);
+  // --- Abrir / cerrar el menú mobile ---
+  // Antes esto vivía "suelto" dentro del listener del burger.
+  // Lo separo en dos funciones (openMenu / closeMenu) porque
+  // ahora tenemos 3 formas distintas de cerrar el menú (tocar el
+  // botón de nuevo, tocar afuera, tocar un link), y no queremos
+  // repetir la misma lógica 3 veces -> si mañana hay que cambiar
+  // algo, se cambia en un solo lugar.
+  const openMenu = () => {
+    nav?.classList.add('is-open');
+    burger?.classList.add('is-active');
+    burger?.setAttribute('aria-expanded', 'true');
+    burger?.setAttribute('aria-label', 'Cerrar menú');
+    header?.classList.add('is-scrolled');
+  };
+
+  const closeMenu = () => {
+    nav?.classList.remove('is-open');
+    burger?.classList.remove('is-active');
+    burger?.setAttribute('aria-expanded', 'false');
+    burger?.setAttribute('aria-label', 'Abrir menú');
+    // Al cerrar, el header no tiene por qué volver a transparente
+    // a la fuerza: recalculamos según el scroll real de la
+    // página llamando de nuevo a onScroll().
+    onScroll();
+  };
+
+  burger?.addEventListener('click', (event) => {
+    // stopPropagation: sin esto, este mismo click seguiría
+    // "burbujeando" hasta el listener de document de más abajo
+    // (el de "cerrar al tocar afuera"), que vería un click fuera
+    // del <nav> y cerraría el menú al toque -> abrías y se
+    // cerraba en el mismo instante. stopPropagation corta la
+    // burbuja acá y evita ese choque entre los dos listeners.
+    event.stopPropagation();
+    const isOpen = nav?.classList.contains('is-open');
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  // --- Cerrar al tocar afuera del menú ---
+  // Escuchamos clicks en TODO el documento. Cada vez que el
+  // usuario toca cualquier parte de la página, nos preguntamos:
+  // ¿el menú está abierto? y ¿ese click fue fuera del <nav>?
+  // (el burger ya lo filtramos arriba con stopPropagation, así
+  // que acá "fuera del nav" alcanza).
+  // event.target es el elemento exacto que se tocó, y
+  // nav.contains(event.target) devuelve true si ese elemento
+  // está DENTRO del <nav> (incluye los links, el botón "Marcas",
+  // todo). Si no está adentro, es un click "afuera" -> cerramos.
+  document.addEventListener('click', (event) => {
+    if (!nav?.classList.contains('is-open')) return;
+    // event.target siempre es un nodo del DOM real (nunca null en
+    // un click), así que no hace falta castear tipos ni nada raro:
+    // simplemente le preguntamos al <nav> si ese nodo está adentro.
+    if (nav.contains(event.target)) return;
+    closeMenu();
+  });
+
+  // --- Cerrar al tocar un link ---
+  // querySelectorAll('a') trae TODOS los <a> que estén dentro del
+  // nav: "Inicio", "Nosotros", "Servicios", "Contacto" y también
+  // cada marca del dropdown (Sharp, Brother, etc). A cada uno le
+  // agregamos el mismo listener: cuando lo tocan, cerramos el
+  // menú. Ojo que el botón "Marcas" es un <button>, no un <a>, así
+  // que querySelectorAll('a') NO lo incluye -> tocarlo no cierra
+  // el menú, que es lo que queremos (es sólo un título, no navega
+  // a ningún lado).
+  nav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      closeMenu();
+    });
   });
 </script>
