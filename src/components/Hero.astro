@@ -1,46 +1,30 @@
 ---
 // Hero.astro
 // -----------------------------------------------------------
-// Recibe un array de imágenes de fondo. Si mandás UNA sola,
-// queda estática. Si mandás VARIAS, el componente arma
-// automáticamente una transición tipo "crossfade" entre ellas
-// (fade suave, no es un slider con flechas: no lo pidieron y
-// sumaría complejidad/botones que compiten con los CTAs).
+// Antes: recibía un array de imágenes y armaba un crossfade
+// automático entre ellas (pensado para poder rotar varias fotos).
+// Ahora: dos imágenes FIJAS, una para mobile y otra para desktop.
+// El navegador elige cuál mostrar solo, con CSS puro y un
+// @media query -> no hace falta JS, ni props, ni loop.
 //
-// Por qué con CSS puro y no una librería de carrusel: son fotos
-// de FONDO, no contenido que el usuario tenga que controlar, así
-// que un crossfade con @keyframes alcanza y pesa casi nada.
-interface Props {
-  images: string[];
-}
-
-const { images } = Astro.props;
+// Dato importante sobre performance: aunque en el HTML/CSS
+// "aparecen" las dos imágenes (una regla para mobile, otra para
+// desktop dentro del @media), el navegador es lo bastante
+// inteligente como para descargar SOLO la que realmente va a
+// usar según el tamaño de pantalla. No hay que preocuparse por
+// estar bajando las dos de más.
 const whatsappNumber = '5492914070341'; // mismo número que ya usa el cliente
 const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.');
-
-// Si hay más de una foto, cada slide dura 6s -> el ciclo completo
-// dura "cantidad de fotos x 6s". Lo calculamos acá en JS y se lo
-// pasamos al CSS como variable, en vez de intentar hacer la cuenta
-// dentro del CSS (los custom properties de CSS no soportan
-// operaciones matemáticas ni condicionales tipo "si > 1 entonces").
-const isSlideshow = images.length > 1;
-const cycleSeconds = images.length * 6;
 ---
 
 <section class="hero">
-  <div class:list={['hero__bg', { 'hero__bg--slideshow': isSlideshow }]} style={`--cycle: ${cycleSeconds}s`}>
-    {images.map((src, i) => (
-      <div
-        class="hero__slide"
-        style={`background-image: url(${src}); animation-delay: ${i * 6}s;`}
-      ></div>
-    ))}
+  <div class="hero__bg">
     <div class="hero__overlay"></div>
     <!-- Acento "halftone": una trama de puntos que remite a la
          trama de impresión CMYK. Es el elemento "firma" del sitio:
          chico, sutil, pero ligado al rubro (impresión) en vez de
          un gradiente decorativo genérico. -->
-    
+
   </div>
 
   <div class="container hero__content">
@@ -78,31 +62,31 @@ const cycleSeconds = images.length * 6;
     position: absolute;
     inset: 0;
     z-index: 0;
-  }
-
-  .hero__slide {
-    position: absolute;
-    inset: 0;
     background-size: cover;
-    background-position: center;
-    opacity: 0;
+    /* "center top" en vez de solo "center": en fotos verticales
+       (que es lo típico en la versión mobile) recortar desde el
+       centro exacto muchas veces corta cabezas o el punto de
+       interés de arriba. Con "top" priorizamos que se vea bien la
+       parte de arriba de la imagen aunque se recorte más abajo.
+       Si con tu foto mobile se ve mejor centrada, cambiá esto por
+       "center center". */
+    background-position: center top;
+    /* Imagen para MOBILE (esta regla aplica siempre que el
+       @media de abajo NO se cumpla, o sea: pantallas angostas). */
+    background-image: url('/hero-bg-mobile.webp');
   }
 
-  /* Caso simple: una sola foto -> queda fija, sin animar nada. */
-  .hero__bg:not(.hero__bg--slideshow) .hero__slide {
-    opacity: 1;
-  }
-
-  /* Caso slideshow: varias fotos -> cada una hace fade in/out,
-     usando "--cycle" (calculado en el frontmatter de Astro como
-     cantidad de fotos x 6s) como duración total del ciclo. */
-  .hero__bg--slideshow .hero__slide {
-    animation: crossfade var(--cycle) infinite;
-  }
-
-  @keyframes crossfade {
-    0%, 12% { opacity: 1; }
-    25%, 100% { opacity: 0; }
+  /* A partir de 900px de ancho usamos la foto de desktop. Elegí
+     900px porque es el mismo breakpoint que ya usa el Header para
+     pasar del menú hamburguesa al menú horizontal -> mantenemos
+     un solo punto de corte "mobile vs desktop" en todo el sitio,
+     en vez de tener un breakpoint distinto por componente (eso
+     generaría un rango de anchos raro donde, por ejemplo, ya se
+     ve el menú de escritorio pero todavía la foto de celular). */
+  @media (min-width: 600px) {
+    .hero__bg {
+      background-image: url('/hero-bg-desktop.webp');
+    }
   }
 
   .hero__overlay {
