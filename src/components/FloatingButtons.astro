@@ -165,26 +165,52 @@ const instagramUrl = 'https://instagram.com/tecnofotsa';
   const wrap = document.getElementById('floating-buttons');
   const marcas = document.getElementById('marcas');
 
-  const updateVisibility = () => {
-    if (!wrap || !marcas) return;
+  // Cuántos px hay que meterse "dentro" de la sección de marcas
+  // (contando desde su borde de arriba) antes de que aparezcan
+  // los botones. Sin este margen, alcanzaba con que el borde de
+  // "marcas" tocara apenas el borde inferior de la pantalla -> y
+  // como el Hero mide justo 100% de la pantalla, eso pasaba casi
+  // apenas cargaba la página (el bug que tenías).
+  const SHOW_BUFFER = 150;
 
-    // getBoundingClientRect().top da la distancia entre el borde
-    // superior de "marcas" y el borde superior de LA PANTALLA
-    // (no de la página entera). Si ese valor es menor o igual a
-    // la altura de la ventana, significa que la sección ya
-    // empezó a asomar desde abajo -> ahí mostramos los botones.
-    const marcasTop = marcas.getBoundingClientRect().top;
-    if (marcasTop <= window.innerHeight) {
+  // Guardamos acá el punto de scroll (en px, contando desde el
+  // principio de la página) a partir del cual hay que mostrar los
+  // botones. Lo recalculamos solo al cargar y al cambiar el
+  // tamaño de ventana -> NO en cada scroll, para no obligar al
+  // navegador a recalcular el layout en cada frame mientras
+  // scrolleás (más liviano para el navegador).
+  let showThreshold = Infinity;
+
+  const computeThreshold = () => {
+    if (!marcas) return;
+    // getBoundingClientRect().top es la distancia entre "marcas"
+    // y el borde superior de LA PANTALLA (cambia todo el tiempo
+    // según cuánto scrolleaste). Sumándole window.scrollY (cuánto
+    // llevás scrolleado) lo convertimos en una posición FIJA
+    // respecto al documento completo, que ya no depende de dónde
+    // estás parado ahora.
+    const marcasAbsoluteTop = marcas.getBoundingClientRect().top + window.scrollY;
+    showThreshold = marcasAbsoluteTop - SHOW_BUFFER;
+  };
+
+  const updateVisibility = () => {
+    if (!wrap) return;
+    if (window.scrollY >= showThreshold) {
       wrap.classList.add('is-visible');
     } else {
       wrap.classList.remove('is-visible');
     }
   };
 
+  computeThreshold();
   updateVisibility();
   window.addEventListener('scroll', updateVisibility, { passive: true });
   // Si el usuario gira el celular o cambia el tamaño de la
-  // ventana, la posición de "marcas" en pantalla puede cambiar
-  // sin que haya habido scroll -> recalculamos también ahí.
-  window.addEventListener('resize', updateVisibility);
+  // ventana, la posición de "marcas" en la página puede cambiar
+  // (por ejemplo, el texto ocupa más o menos líneas) -> ahí sí
+  // recalculamos el punto de referencia entero.
+  window.addEventListener('resize', () => {
+    computeThreshold();
+    updateVisibility();
+  });
 </script>
