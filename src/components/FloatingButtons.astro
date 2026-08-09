@@ -21,11 +21,9 @@
 // que es el objetivo #1 del sitio). Instagram, secundario, queda
 // arriba. Si preferís el orden al revés, es solo cambiar el
 // orden de los dos <a> de abajo.
-    const whatsappNumber = '5492914070341'; // mismo número que usa el resto del sitio
+const whatsappNumber = '5492914070341';
 const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.');
-
-// TODO: reemplazar por el usuario de Instagram real del cliente.
-const instagramUrl = 'https://instagram.com/tecnofotsa';
+const instagramUrl = 'https://instagram.com/tecnofot';
 ---
 
 <div class="floating-buttons" id="floating-buttons">
@@ -98,9 +96,7 @@ const instagramUrl = 'https://instagram.com/tecnofotsa';
     height: 2.7rem;
     display: grid;
     place-items: center;
-    /* Cuadrado con esquinas redondeadas, no círculo (border-radius:
-       50%) ni esquina recta -> punto medio pedido. */
-    border-radius: 14px;
+    border-radius: 50%;
     color: #fff;
     box-shadow: var(--shadow-soft);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -148,7 +144,7 @@ const instagramUrl = 'https://instagram.com/tecnofotsa';
     .floating-buttons__btn {
       width: 2.5rem;
       height: 2.5rem;
-      border-radius: 12px;
+      border-radius: 50%;
     }
   }
 </style>
