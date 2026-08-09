@@ -10,6 +10,7 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Nosotros | Tecnofot">
+    <div style="height: 67px; background: black;"></div>
   <main class="nosotros">
     <!-- ============ BLOQUE 1: "Nosotros" ============
          Un párrafo + una imagen al lado. Nada de cards acá: es
@@ -24,7 +25,7 @@ import Layout from '../layouts/Layout.astro';
                porque esta imagen está más abajo en la página, no
                es lo primero que ve el usuario (a diferencia del
                Hero, que sí carga "eager" por default al ser LCP). -->
-          <img src="/images/nosotros/equipo.jpg" alt="Equipo de Tecnofot" loading="lazy" />
+          <img src="/hero-bg-mobile.webp" alt="Equipo de Tecnofot" loading="lazy" />
         </div>
 
         <div class="nosotros__intro-text">
@@ -108,10 +109,7 @@ import Layout from '../layouts/Layout.astro';
      sola vez, así no la repetís en cada subpágina. Acá la dejo
      local para que este archivo funcione solo, mientras tanto. */
   .nosotros {
-    --header-height: 63px;
-    /* Header + un poco de aire extra, para que el título no
-       quede "pegado" justo debajo del Header. */
-    padding-top: calc(var(--header-height) + 3rem);
+    padding-top: 3rem;
   }
 
   .nosotros__intro,
