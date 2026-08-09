@@ -1,0 +1,212 @@
+---
+// FloatingButtons.astro
+// -----------------------------------------------------------
+// Dos botones fijos abajo a la derecha (WhatsApp arriba... no,
+// abajo -> ver nota más adelante), ocultos al cargar la página y
+// que aparecen recién cuando el usuario scrollea hasta la
+// sección de marcas (id="marcas", ya existe en BrandsCarousel).
+//
+// Por qué CUADRADOS con bordes redondeados y no círculos: me
+// pediste "más chicos de lo normal" porque son DOS apilados -> un
+// círculo chico se ve como un puntito perdido, mientras que un
+// cuadrado redondeado (border-radius, no 50%) mantiene más
+// superficie de "toque" (importante en mobile) con el mismo alto,
+// y además dos cuadrados apilados con poco espacio entre sí se
+// leen como "un solo grupo de botones", que es justo el efecto
+// que buscamos.
+//
+// Por qué WhatsApp queda ABAJO de los dos: en un grupo vertical
+// de acciones, el dedo pulgar en mobile llega más cómodo al
+// botón de más abajo -> ahí va la acción principal (WhatsApp,
+// que es el objetivo #1 del sitio). Instagram, secundario, queda
+// arriba. Si preferís el orden al revés, es solo cambiar el
+// orden de los dos <a> de abajo.
+const whatsappNumber = '5492914070341';
+const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.');
+const instagramUrl = 'https://instagram.com/tecnofot';
+---
+
+<div class="floating-buttons" id="floating-buttons">
+  <a
+    class="floating-buttons__btn floating-buttons__btn--instagram"
+    href={instagramUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Seguinos en Instagram"
+  >
+    <!-- Ícono genérico tipo "cámara" (cuadrado redondeado + círculo
+         + puntito), no el logo oficial de Instagram pixel por
+         pixel: así evitamos usar un asset de marca registrada y el
+         ícono queda coherente en estilo (mismo grosor de línea)
+         con el resto de los íconos del sitio. -->
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5.5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  </a>
+
+  <a
+    class="floating-buttons__btn floating-buttons__btn--whatsapp"
+    href={`https://wa.me/${whatsappNumber}?text=${whatsappMsg}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Hablar por WhatsApp"
+  >
+    <!-- Mismo path SVG que ya usa el botón de WhatsApp del Hero,
+         para no reinventar el ícono. -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.19c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.11.11-1.79-.11a13.6 13.6 0 0 1-1.63-.6c-2.87-1.24-4.74-4.12-4.89-4.31-.15-.2-1.17-1.55-1.17-2.96s.73-2.1 1-2.39c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.15.11.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.27.36-.22.6-.13.24.09 1.55.73 1.81.86.27.14.44.2.51.31.07.12.07.66-.17 1.33Z"/>
+    </svg>
+  </a>
+</div>
+
+<style>
+  .floating-buttons {
+    position: fixed;
+    right: 1.1rem;
+    bottom: 1.1rem;
+    z-index: 40; /* debajo del header (z-index: 50), por si algún día se cruzan */
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+
+    /* Estado inicial: oculto. No uso "display: none" porque eso
+       impediría animar la aparición (no se puede hacer transition
+       de display). En cambio: opacity 0 + un pequeño desplazamiento
+       hacia abajo (translateY), y pointer-events: none para que,
+       mientras está invisible, el grupo no "tape" clicks sobre lo
+       que esté detrás (aunque no se vea, seguiría estando ahí
+       ocupando espacio si no ponemos esto). */
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  /* Esta clase la agrega/saca el script de abajo según el scroll. */
+  .floating-buttons.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .floating-buttons__btn {
+    width: 2.7rem;
+    height: 2.7rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .floating-buttons__btn:hover,
+  .floating-buttons__btn:focus-visible {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  }
+
+  /* Verde oficial de WhatsApp: lo dejamos así (no lo mezclamos con
+     la paleta del sitio) porque es un color que la gente reconoce
+     de un vistazo como "este botón abre WhatsApp" -> ayuda más que
+     estorba, aunque el resto del sitio sea cyan/azul. */
+  .floating-buttons__btn--whatsapp {
+    background: #25d366;
+  }
+
+  /* Para Instagram, en vez del degradé oficial (naranja/rosa/
+     violeta) -- que iría bastante en contra del look "serio y
+     minimalista" que definimos para todo el sitio -- uso el azul
+     secundario de la propia marca de Tecnofot. Si preferís más
+     reconocible como Instagram, decime y lo cambio por el degradé
+     clásico (linear-gradient(45deg, #f09433, #e6683c, #dc2743,
+     #cc2366, #bc1888)). */
+  .floating-buttons__btn--instagram {
+    background: var(--color-cyan-dim, #2e3092);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floating-buttons,
+    .floating-buttons__btn {
+      transition: none;
+    }
+  }
+
+  /* En mobile, un poco más pegado al borde para no perder tanto
+     ancho de pantalla que ya es limitado. */
+  @media (max-width: 480px) {
+    .floating-buttons {
+      right: 0.85rem;
+      bottom: 0.85rem;
+    }
+    .floating-buttons__btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+    }
+  }
+</style>
+
+<script>
+  // Mismo patrón que ya usamos en el Header para decidir si está
+  // "scrolleado" o no: en vez de usar IntersectionObserver (que
+  // se pondría en false de nuevo apenas la sección de marcas sale
+  // por ARRIBA de la pantalla al seguir bajando), comparamos la
+  // posición de #marcas contra el scroll actual en cada evento de
+  // scroll. Así el grupo de botones se queda visible desde que
+  // aparece "marcas" hasta el final de la página, y solo se
+  // vuelve a ocultar si el usuario sube de nuevo al Hero.
+  const wrap = document.getElementById('floating-buttons');
+  const marcas = document.getElementById('marcas');
+
+  // Cuántos px hay que meterse "dentro" de la sección de marcas
+  // (contando desde su borde de arriba) antes de que aparezcan
+  // los botones. Sin este margen, alcanzaba con que el borde de
+  // "marcas" tocara apenas el borde inferior de la pantalla -> y
+  // como el Hero mide justo 100% de la pantalla, eso pasaba casi
+  // apenas cargaba la página (el bug que tenías).
+  const SHOW_BUFFER = 150;
+
+  // Guardamos acá el punto de scroll (en px, contando desde el
+  // principio de la página) a partir del cual hay que mostrar los
+  // botones. Lo recalculamos solo al cargar y al cambiar el
+  // tamaño de ventana -> NO en cada scroll, para no obligar al
+  // navegador a recalcular el layout en cada frame mientras
+  // scrolleás (más liviano para el navegador).
+  let showThreshold = Infinity;
+
+  const computeThreshold = () => {
+    if (!marcas) return;
+    // getBoundingClientRect().top es la distancia entre "marcas"
+    // y el borde superior de LA PANTALLA (cambia todo el tiempo
+    // según cuánto scrolleaste). Sumándole window.scrollY (cuánto
+    // llevás scrolleado) lo convertimos en una posición FIJA
+    // respecto al documento completo, que ya no depende de dónde
+    // estás parado ahora.
+    const marcasAbsoluteTop = marcas.getBoundingClientRect().top + window.scrollY;
+    showThreshold = marcasAbsoluteTop - SHOW_BUFFER;
+  };
+
+  const updateVisibility = () => {
+    if (!wrap) return;
+    if (window.scrollY >= showThreshold) {
+      wrap.classList.add('is-visible');
+    } else {
+      wrap.classList.remove('is-visible');
+    }
+  };
+
+  computeThreshold();
+  updateVisibility();
+  window.addEventListener('scroll', updateVisibility, { passive: true });
+  // Si el usuario gira el celular o cambia el tamaño de la
+  // ventana, la posición de "marcas" en la página puede cambiar
+  // (por ejemplo, el texto ocupa más o menos líneas) -> ahí sí
+  // recalculamos el punto de referencia entero.
+  window.addEventListener('resize', () => {
+    computeThreshold();
+    updateVisibility();
+  });
+</script>

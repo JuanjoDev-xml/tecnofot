@@ -1,0 +1,269 @@
+---
+// servicios.astro
+// -----------------------------------------------------------
+// Mismo supuesto que en nosotros.astro sobre dónde vive el
+// Layout -> ajustá si hace falta.
+import Layout from '../layouts/Layout.astro';
+
+// Array de servicios en vez de escribir las 3 cards a mano una
+// por una: si mañana agregan un 4to servicio o cambian el texto
+// de uno, se edita acá arriba y no hay que tocar el markup. El
+// ícono de cada uno es un array de <path> en formato "d" de SVG
+// (mismo viewBox 0 0 24 24 para los 3, así quedan del mismo
+// tamaño visual sin ajustar nada a mano).
+const servicios = [
+  {
+    titulo: 'Venta directa',
+    texto:
+      'Contamos con la más variada línea de productos adaptables a cada necesidad. En la comercialización se incluye instalación, ajuste, calibración y curso para el usuario, además contará con la excelencia de nuestro servicio post venta.',
+    bullets: [] as string[],
+    // Ícono: caja/paquete
+    iconPaths: [
+      'M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z',
+      'M3 8.5v7L12 20l9-4.5v-7',
+      'M12 13v7',
+    ],
+  },
+  {
+    titulo: 'Alquiler',
+    texto:
+      'Dentro de un costo fijo mensual acorde al volumen de copiado o impresión, incluye las impresoras o equipos multifunción que el cliente requiera más:',
+    bullets: [
+      'Servicio técnico especializado.',
+      'Servicio de provisión de insumos.',
+      'Armado y configuración.',
+      'Mesa de ayuda.',
+    ],
+    // Ícono: calendario/repetición (alquiler = pago recurrente)
+    iconPaths: [
+      'M4 5.5h16v15H4v-15Z',
+      'M4 10h16',
+      'M8 3v4',
+      'M16 3v4',
+    ],
+  },
+  {
+    titulo: 'Soluciones técnicas',
+    texto:
+      'Junto con el equipamiento apropiado, brindamos capacitación a usuarios, soporte, configuración como otros sistemas asociados. También contamos con provisión de repuestos y mano de obra especializada para realizar reparaciones que aseguren el buen funcionamiento de su equipo.',
+    bullets: [] as string[],
+    // Ícono: llave inglesa (soporte/reparación)
+    iconPaths: [
+      'M14.5 3.5a4.5 4.5 0 0 0-5.9 5l-6.1 6.1a2 2 0 0 0 2.8 2.8L11.4 11a4.5 4.5 0 0 0 5.9-5.9l-2.6 2.6-2-2 2.6-2.6Z',
+    ],
+  },
+];
+---
+
+<Layout title="Servicios | Tecnofot">
+  <main class="servicios">
+    <div class="container">
+      <header class="servicios__heading">
+        <p class="eyebrow">Servicios</p>
+        <h1 class="servicios__title">Qué ofrecemos</h1>
+      </header>
+
+      <div class="servicios__grid">
+        {servicios.map((s) => (
+          <article class="servicio-card">
+            <div class="servicio-card__icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                {s.iconPaths.map((d) => <path d={d} />)}
+              </svg>
+            </div>
+
+            <h2 class="servicio-card__title">{s.titulo}</h2>
+            <p class="servicio-card__text">{s.texto}</p>
+
+            {s.bullets.length > 0 && (
+              <ul class="servicio-card__bullets">
+                {s.bullets.map((b) => <li>{b}</li>)}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .servicios {
+    --header-height: 63px; /* ver nota en nosotros.astro sobre centralizar esto */
+    padding-top: calc(var(--header-height) + 3rem);
+    padding-bottom: var(--space-section);
+  }
+
+  .servicios__heading {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .servicios__title {
+    font-size: var(--fs-h1, 2.5rem);
+    color: var(--color-text);
+    margin-top: 0.4rem;
+  }
+
+  .servicios__grid {
+    display: grid;
+    grid-template-columns: 1fr; /* mobile: apiladas */
+    gap: 1.5rem;
+  }
+
+  .servicio-card {
+    position: relative;
+    /* overflow: hidden recorta el "brillo" diagonal que armamos
+       más abajo con ::before, para que no se salga de los bordes
+       redondeados de la card. */
+    overflow: hidden;
+    padding: 2rem 1.75rem;
+    border-radius: 18px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt, var(--color-bg));
+    /* Transiciono transform, box-shadow Y border-color: son las 3
+       cosas que cambian al hacer hover (ver más abajo). Poner
+       "all" sería más simple de escribir, pero animaría TODO,
+       incluyendo cosas que no queremos animar (como cambios de
+       color por el toggle de tema) -> mejor ser explícito. */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* --- Animación de hover, en 3 capas ---
+     1) La card entera se levanta un poco y gana sombra (el
+        "interesante" que pediste, pero sin exagerar).
+     2) El ícono escala y gira levemente, como si "reaccionara".
+     3) Un brillo diagonal barre la card de punta a punta.
+     Todo con transform/opacity, que es lo que el navegador puede
+     animar más liviano (no dispara recálculos de layout). */
+  .servicio-card:hover,
+  .servicio-card:focus-within {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    border-color: var(--color-cyan-dim, var(--color-border));
+  }
+
+  /* El "brillo" es un pseudo-elemento (::before) que no existe en
+     el HTML -> lo generamos 100% con CSS. Es una franja
+     diagonal, angosta, ubicada bien a la izquierda ANTES del
+     hover, y la deslizamos hacia la derecha con transform al
+     hacer hover. Usar transform (y no animar "left" o "margin")
+     es lo que hace que se vea fluido en vez de trabado. */
+  .servicio-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      color-mix(in srgb, var(--color-cyan-dim, #77ceef) 18%, transparent),
+      transparent
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+  }
+
+  .servicio-card:hover::before,
+  .servicio-card:focus-within::before {
+    transform: translateX(260%) skewX(-20deg);
+    transition: transform 0.7s ease;
+  }
+
+  .servicio-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    color: var(--color-cyan-dim, var(--color-text));
+    background: color-mix(in srgb, var(--color-cyan-dim, #77ceef) 12%, transparent);
+    transition: transform 0.35s ease;
+  }
+
+  .servicio-card:hover .servicio-card__icon,
+  .servicio-card:focus-within .servicio-card__icon {
+    transform: scale(1.1) rotate(-6deg);
+  }
+
+  .servicio-card__title {
+    margin-top: 1.25rem;
+    font-size: 1.3rem;
+    color: var(--color-text);
+  }
+
+  .servicio-card__text {
+    margin-top: 0.75rem;
+    color: var(--color-ink-soft, var(--color-text));
+    line-height: 1.65;
+  }
+
+  .servicio-card__bullets {
+    margin-top: 1rem;
+    /* list-style: none saca el bullet nativo del navegador (el
+       puntito blanco/gris por defecto). Sin esto, se veían DOS
+       bullets por línea: el nativo + el cyan que armamos con
+       ::before más abajo. padding: 0 porque el <ul> nativo trae
+       un padding-left grande (para dejarle lugar al bullet
+       nativo) que ya no necesitamos -> el propio <li> maneja su
+       indentación con su padding-left. */
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .servicio-card__bullets li {
+    padding-left: 1.1rem;
+    position: relative;
+    color: var(--color-ink-soft, var(--color-text));
+    line-height: 1.5;
+  }
+
+  /* Viñeta propia en vez del bullet nativo del navegador: así
+     controlamos su color (que siga al tema) y su alineación
+     vertical, cosa que con "list-style" es más incómodo de
+     ajustar con precisión. */
+  .servicio-card__bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-cyan-dim, var(--color-text));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .servicio-card,
+    .servicio-card::before,
+    .servicio-card__icon {
+      transition: none;
+    }
+    .servicio-card:hover {
+      transform: none;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 899px) {
+    .servicios__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    /* La 3ra card (Soluciones técnicas), sola en la 2da fila,
+       ocupa las 2 columnas para no quedar descolgada a la
+       izquierda con un hueco vacío al lado. */
+    .servicio-card:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .servicios__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,9 +1,203 @@
 ---
-import Layout from "../layouts/Layout.astro"
+// nosotros.astro
+// -----------------------------------------------------------
+// Import de Layout: ASUMO que vive en '../layouts/Layout.astro'
+// y que acepta una prop "title" (es el patrón más común en
+// proyectos Astro). Si tu Layout está en otro lado o se llama
+// distinto, ajustá esta línea y la del <Layout title="..."> de
+// abajo -> el resto del archivo no depende de esto.
+import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="TECNOFOT | Nuestra Empresa">
-    <div style="height: 500px; background-color: black;"></div>
-<p style="width: 60%; position: relative; margin: auto;">Tecnofot SA, es una empresa que inicio sus actividades en 1985, somos una de las empresas más antiguas conocidas en el rubro en Bahía Blanca y la zona, en todo este tiempo la empresa se fue adaptando a los cambios de mercado, tecnología y necesidades de los clientes usuarios, en sus inicios los equipos solo eran copiadores. El foco de la empresa estaba puesto solo en fotocopiadoras, es lo que mercado demandaba, y lo que tecnológicamente exista; Hoy ofrecemos soluciones integrales para el manejo de documentos, desde necesidades de copiado/ impresión a digitalización, identificación profesional con equipos corporativos y de gran formato.</p>
+<Layout title="Nosotros | Tecnofot">
+  <main class="nosotros">
+    <!-- ============ BLOQUE 1: "Nosotros" ============
+         Un párrafo + una imagen al lado. Nada de cards acá: es
+         justo el caso que vos decías que "se hace raro" con
+         cards -> es contenido institucional, no una lista de
+         opciones para comparar (que es donde las cards brillan). -->
+    <section class="nosotros__intro">
+      <div class="container nosotros__intro-grid">
+        <div class="nosotros__intro-image">
+          <!-- TODO: reemplazar por la imagen real (y la ruta,
+               según dónde la guardes en /public). Uso loading="lazy"
+               porque esta imagen está más abajo en la página, no
+               es lo primero que ve el usuario (a diferencia del
+               Hero, que sí carga "eager" por default al ser LCP). -->
+          <img src="/images/nosotros/equipo.jpg" alt="Equipo de Tecnofot" loading="lazy" />
+        </div>
 
+        <div class="nosotros__intro-text">
+          <p class="eyebrow">Nosotros</p>
+          <h1 class="nosotros__title">Quiénes somos</h1>
+          <!-- TODO: pegar acá el párrafo real que ya tenían escrito. -->
+          <p class="nosotros__paragraph">
+            Tecnofot SA, es una empresa que inicio sus actividades en 1985, somos una de las empresas más antiguas conocidas en el rubro en Bahía Blanca y la zona, en todo este tiempo la empresa se fue adaptando a los cambios de mercado, tecnología y necesidades de los clientes usuarios, en sus inicios los equipos solo eran copiadores. El foco de la empresa estaba puesto solo en fotocopiadoras, es lo que mercado demandaba, y lo que tecnológicamente exista; Hoy ofrecemos soluciones integrales para el manejo de documentos, desde necesidades de copiado/ impresión a digitalización, identificación profesional con equipos corporativos y de gran formato.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BLOQUE 2: "Compromiso medioambiental" ============
+         Acá SÍ hay ícono (no foto), como pediste: un logo sobrio
+         de hoja al lado del título, y los 2 párrafos abajo. En
+         desktop los 2 párrafos van en 2 columnas (a lo diario/
+         periódico) para no dejar una sola columna de texto
+         corrida y angosta ocupando todo el ancho -> se lee más
+         cómodo y visualmente "acompaña" al bloque de arriba, que
+         también es 2 columnas (imagen + texto). -->
+    <section class="nosotros__ambiental">
+      <div class="container">
+        <div class="nosotros__ambiental-heading">
+          <!-- Ícono de hoja, mismo estilo de línea (stroke, sin
+               relleno) que el ícono de Instagram del botón
+               flotante, para que se sienta parte de la misma
+               familia visual del sitio. -->
+          <svg
+            class="nosotros__ambiental-icon"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M20 4c-8 0-14 5-14 13 0 1 .8 2 2 2 8 0 13-6 13-14 0-.5-.4-1-1-1Z" />
+            <path d="M8 19c0-5 3-9 8-11" />
+          </svg>
+          <h2 class="nosotros__ambiental-title">Compromiso medioambiental</h2>
+        </div>
+
+        <div class="nosotros__ambiental-text">
+          <p>
+            Nuestra empresa también está inserta en promover la
+            responsabilidad medioambiental en todos los niveles,
+            tanto dentro como fuera de la compañía. El trabajo
+            continuo es el intento de reducir el impacto
+            medioambiental, y es por tal motivo que estamos
+            comprometidos con la puesta en marcha de sistemas
+            globales de gestión medioambiental que cubren las
+            actividades de la empresa, con el objeto de asegurar
+            que nuestra compañía y el medioambiente evolucionen en
+            armonía.
+          </p>
+          <p>
+            Presentamos a Ustedes de esta manera, una alternativa
+            diferente en el mercado de copiadoras e impresoras
+            digitales y conectables a red, remanufactura de
+            cartuchos láser, planeras y faxes como así también
+            nuestro respaldo en el servicio técnico.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
 </Layout>
+
+<style>
+  /* --header-height: el Header es "position: fixed", así que no
+     empuja al contenido hacia abajo por sí solo -> si no
+     compensamos, el título "Quiénes somos" quedaría tapado
+     detrás del Header al cargar la página.
+     Ojo: esta misma variable la vamos a necesitar en servicios.astro
+     y en las 5 páginas de marcas. Te conviene mover esta línea a
+     tu global.css como ":root { --header-height: 63px; }" una
+     sola vez, así no la repetís en cada subpágina. Acá la dejo
+     local para que este archivo funcione solo, mientras tanto. */
+  .nosotros {
+    --header-height: 63px;
+    /* Header + un poco de aire extra, para que el título no
+       quede "pegado" justo debajo del Header. */
+    padding-top: calc(var(--header-height) + 3rem);
+  }
+
+  .nosotros__intro,
+  .nosotros__ambiental {
+    padding-block: var(--space-section);
+  }
+
+  .nosotros__intro-grid {
+    display: grid;
+    /* mobile-first: 1 sola columna, imagen arriba y texto abajo.
+       Se convierte en 2 columnas recién en el @media de abajo. */
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .nosotros__intro-image img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  .nosotros__title {
+    font-size: var(--fs-h1, 2.5rem);
+    color: var(--color-text);
+    margin-top: 0.4rem;
+  }
+
+  .nosotros__paragraph {
+    margin-top: 1.25rem;
+    color: var(--color-ink-soft, var(--color-text));
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .nosotros__ambiental {
+    /* Separador sutil entre los 2 bloques: una línea finita usando
+       el mismo color de borde que ya usa el sitio (el Header lo
+       usa para su sombra al scrollear), no un color inventado. */
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-alt, var(--color-bg));
+  }
+
+  .nosotros__ambiental-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .nosotros__ambiental-icon {
+    flex-shrink: 0;
+    color: var(--color-cyan-dim, var(--color-text));
+  }
+
+  .nosotros__ambiental-title {
+    font-size: var(--fs-h2);
+    color: var(--color-text);
+  }
+
+  .nosotros__ambiental-text {
+    margin-top: 1.75rem;
+    display: grid;
+    grid-template-columns: 1fr; /* mobile: 1 columna */
+    gap: 1.5rem;
+  }
+
+  .nosotros__ambiental-text p {
+    color: var(--color-ink-soft, var(--color-text));
+    line-height: 1.7;
+  }
+
+  @media (min-width: 900px) {
+    .nosotros__intro-grid {
+      /* Imagen ocupa un poco menos que la mitad, el texto un poco
+         más -> el texto es lo que hay que leer, la imagen
+         acompaña. */
+      grid-template-columns: 0.85fr 1fr;
+      gap: 3.5rem;
+    }
+
+    .nosotros__ambiental-text {
+      /* Los 2 párrafos, uno al lado del otro. */
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+  }
+</style>
