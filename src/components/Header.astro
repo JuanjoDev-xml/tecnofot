@@ -105,14 +105,14 @@ const marcas = [
     inset-inline: 0;
     top: 0;
     z-index: 50;
-    padding-block: 1.1rem;
-    transition: background 0.25s ease, box-shadow 0.25s ease, padding-block 0.25s ease;
+    background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 0 var(--color-border);
+    padding-block: 0.7rem;
   }
 
   /* Estado inicial: transparente sobre el Hero */
-  .header {
-    background: transparent;
-  }
+  
 
   /* Clase que agrega el script cuando el usuario scrollea.
      color-mix() mezcla var(--color-bg) con transparencia: como
@@ -143,7 +143,7 @@ const marcas = [
     font-size: 1.15rem;
     letter-spacing: 0.02em;
     text-decoration: none;
-    color: var(--color-paper);
+    color: var(--color-accent-text);
     transition: color 0.25s ease;
   }
   .header__logo img{
@@ -164,7 +164,7 @@ const marcas = [
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
-    color: var(--color-paper);
+    color: var(--color-text);
     transition: color 0.25s ease, opacity 0.15s ease;
   }
 
@@ -184,7 +184,7 @@ const marcas = [
      Por eso en modo claro se veía negro arriba del todo, cuando
      debía verse blanco/clarito como "Inicio", "Nosotros", etc. */
   .header__dropdown-trigger {
-    color: var(--color-paper);
+    color: var(--color-text);
     transition: color 0.25s ease, opacity 0.15s ease;
   }
 
@@ -286,7 +286,7 @@ const marcas = [
     align-items: center;
     gap: 0.35rem; /* "bien pegadito" al hamburger, como pediste */
     --control-size: 34px;
-    color: var(--color-paper); /* estado transparente: ícono blanco sobre la foto del Hero */
+    color: var(--color-text); /* estado transparente: ícono blanco sobre la foto del Hero */
   }
 
   .header.is-scrolled .header__controls {
@@ -309,7 +309,7 @@ const marcas = [
   .header__burger span {
     width: 20px;
     height: 2px;
-    background: var(--color-paper);
+    background: var(--color-text);
     transition: background 0.25s ease, transform 0.25s ease, opacity 0.2s ease;
     /* transform-origin: center es el default, pero lo dejo explícito
        porque las rotaciones de abajo (la animación a X) giran cada
