@@ -5,7 +5,7 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="container footer__grid">
     <div>
-      <p class="footer__logo">TECNOFOT</p>
+      <a href="https://tecnofot.vercel.app"><img class="footer__logo" src="/logo.png"></a>
       <p class="footer__text">Thompson 309, esq. Fitz Roy — Bahía Blanca</p>
       <p class="footer__text">
         <a href="mailto:ventas@tecnofotsa.com.ar">ventas@tecnofotsa.com.ar</a>
@@ -52,9 +52,7 @@ const year = new Date().getFullYear();
   }
 
   .footer__logo {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: var(--color-paper);
+    height: 40px;
     margin-bottom: 0.75rem;
   }
 
@@ -92,6 +90,9 @@ const year = new Date().getFullYear();
     padding-block: 1.25rem;
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.45);
+  }
+  .footer__bottom p{
+    color: var(--color-paper);
   }
 
   @media (min-width: 700px) {
