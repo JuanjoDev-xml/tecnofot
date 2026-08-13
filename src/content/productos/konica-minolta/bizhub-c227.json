@@ -1,0 +1,9 @@
+{
+  "titulo": "bizhub C227",
+  "imagen": "/images/productos/konica-minolta/bizhub-c227.jpg",
+  "descripcion": "Multifunción color compacta, ideal para oficinas con volumen medio de impresión y buena velocidad de trabajo.",
+  "color": "color",
+  "categoria": "oficina",
+  "folletoPdf": "/pdfs/konica-minolta/bizhub-c227.pdf",
+  "driversUrl": "https://www.konicaminolta.com.ar/es-ar/soporte/descarga-de-controladores"
+}

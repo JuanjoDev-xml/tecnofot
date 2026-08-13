@@ -1,0 +1,211 @@
+---
+// Destino real: src/components/ProductCard.astro
+// -----------------------------------------------------------
+// Este componente es "tonto" a propósito: solo recibe los datos
+// de UN producto y los muestra bien. No sabe nada de búsqueda ni
+// de filtros -> esa lógica vive en la página que lo usa
+// ([marca].astro), afuera. Separar así las cosas ("esto muestra
+// datos" vs "esto decide qué mostrar") hace que este componente
+// se pueda reusar en cualquier lado sin arrastrar lógica que no
+// le corresponde (por ejemplo, el día de mañana podrías usarlo
+// también en una sección de "destacados" en el index).
+interface Props {
+  titulo: string;
+  imagen: string;
+  descripcion: string;
+  color: 'color' | 'byn';
+  categoria: 'corporativo' | 'oficina' | 'hogareno';
+  folletoPdf: string;
+  driversUrl: string;
+}
+
+const { titulo, imagen, descripcion, color, categoria, folletoPdf, driversUrl } = Astro.props;
+
+// Los valores internos (color, categoria) son "slugs" en inglés/
+// sin tildes a propósito (más fáciles de comparar en el filtro
+// de JS más adelante, sin líos de mayúsculas/tildes). Estos 2
+// objetos son solo para mostrar el texto lindo en pantalla.
+const colorLabels = { color: 'Color', byn: 'Blanco y negro' };
+const categoriaLabels = { corporativo: 'Corporativo', oficina: 'Oficina', hogareno: 'Hogareño' };
+---
+
+<article class="product-card">
+  <div class="product-card__image-wrap">
+    <img src={imagen} alt={titulo} loading="lazy" class="product-card__image" />
+  </div>
+
+  <div class="product-card__body">
+    <div class="product-card__tags">
+      <!-- data-color-tag no se usa para filtrar (eso lo maneja el
+           contenedor padre en la página), es solo un "gancho" por
+           si en el futuro querés, por ejemplo, cambiar el color de
+           fondo de la tag según el valor con CSS puro. -->
+      <span class="tag tag--color" data-color-tag={color}>{colorLabels[color]}</span>
+      <span class="tag tag--categoria">{categoriaLabels[categoria]}</span>
+    </div>
+
+    <h3 class="product-card__title">{titulo}</h3>
+    <p class="product-card__desc">{descripcion}</p>
+
+    <div class="product-card__actions">
+      <a class="product-card__btn product-card__btn--primary" href={folletoPdf} download target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12" />
+          <path d="M7 10l5 5 5-5" />
+          <path d="M4 19h16" />
+        </svg>
+        Folleto
+      </a>
+      <a class="product-card__btn product-card__btn--ghost" href={driversUrl} target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 3h7v7" />
+          <path d="M21 3l-9 9" />
+          <path d="M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6" />
+        </svg>
+        Drivers
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt, var(--color-bg));
+    overflow: hidden; /* recorta la imagen para que respete el border-radius */
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  /* Hover/focus sutil: se levanta un poco y gana sombra. Mismo
+     lenguaje visual que ya usamos en las cards de Servicios, para
+     que el sitio se sienta consistente en vez de que cada sección
+     invente su propia animación. */
+  .product-card:hover,
+  .product-card:focus-within {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-soft);
+    border-color: var(--color-cyan-dim, var(--color-border));
+  }
+
+  .product-card__image-wrap {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  /* El zoom sutil de la foto al hacer hover es un detalle típico
+     de catálogos/e-commerce prolijos: le da vida a la card sin
+     mover ni un píxel el layout de alrededor (porque el contenedor
+     de arriba tiene overflow: hidden y tamaño fijo). */
+  .product-card:hover .product-card__image,
+  .product-card:focus-within .product-card__image {
+    transform: scale(1.06);
+  }
+
+  .product-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* empuja los botones de acción al fondo si una card tiene menos texto que otra */
+    padding: 1.1rem 1.15rem 1.25rem;
+  }
+
+  .product-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+
+  .tag--color {
+    color: var(--color-cyan-dim, var(--color-text));
+    background: color-mix(in srgb, var(--color-cyan-dim, #77ceef) 14%, transparent);
+  }
+
+  .tag--categoria {
+    color: var(--color-ink-soft, var(--color-text));
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+  }
+
+  .product-card__title {
+    margin-top: 0.65rem;
+    font-size: 1.08rem;
+    color: var(--color-text);
+  }
+
+  .product-card__desc {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-ink-soft, var(--color-text));
+    /* line-clamp: corta el texto a 3 líneas y agrega "..." al
+       final, aunque la descripción sea más larga. Así todas las
+       cards quedan de la misma altura sin importar si un producto
+       tiene una descripción más corta o más larga que otro. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-card__actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: 0.6rem;
+    /* margin-top: auto empuja esta fila al fondo de la card,
+       porque .product-card__body es flex-direction: column y
+       flex: 1 más arriba -> el espacio libre que sobra se lo
+       queda este margen, no el texto. */
+    margin-top: auto;
+  }
+
+  .product-card__btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .product-card__btn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  .product-card__btn--primary {
+    background: var(--color-cyan-dim, var(--color-text));
+    color: var(--color-bg);
+  }
+
+  .product-card__btn--ghost {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+</style>
