@@ -41,7 +41,7 @@ interface Props {
 }
 
 const { brands } = Astro.props;
-const track = [...brands, ...brands]; // duplicado para el loop infinito
+const track = [...brands, ...brands, ...brands]; // duplicado para el loop infinito
 ---
 
 <section class="brands" id="marcas">
@@ -129,7 +129,7 @@ const track = [...brands, ...brands]; // duplicado para el loop infinito
     align-items: center;
     width: max-content;
     gap: clamp(2.5rem, 6vw, 5rem);
-    animation: scroll-left 26s linear infinite;
+    animation: scroll-left 50s linear infinite;
   }
 
   .brands__viewport:hover .brands__track {
