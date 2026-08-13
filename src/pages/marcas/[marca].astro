@@ -1,0 +1,387 @@
+---
+// Destino real: src/pages/marcas/[marca].astro
+// -----------------------------------------------------------
+// El nombre del archivo entre corchetes, [marca], es lo que hace
+// que sea una "ruta dinámica": UN solo archivo, pero Astro va a
+// generar tantas páginas como valores le devolvamos en
+// getStaticPaths() de acá abajo -> 14 marcas = 14 páginas HTML
+// generadas en el build, sin que hayas escrito 14 archivos.
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro'; // TODO: ajustar ruta/props si tu Layout es distinto
+import ProductCard from '../../components/ProductCard.astro';
+
+// getStaticPaths() SOLO corre durante el build (armado del sitio),
+// nunca en el navegador del visitante. Su trabajo es devolver una
+// lista de "por cuáles valores de [marca] generar una página, y
+// con qué datos (props) arrancar cada una".
+export async function getStaticPaths() {
+  // getCollection('productos') trae TODOS los productos de TODAS
+  // las marcas juntos, ya validados contra el schema de config.ts.
+  const todosLosProductos = await getCollection('productos');
+
+  // Cada producto vive en una ruta tipo
+  // "konica-minolta/bizhub-c227" (carpeta/archivo, sin extensión).
+  // Con .split('/')[0] nos quedamos solo con el nombre de carpeta
+  // -> ese es el "slug" de la marca. new Set(...) saca duplicados
+  // (si hay 10 productos de Konica Minolta, no queremos el slug
+  // "konica-minolta" repetido 10 veces).
+  const marcasSlugs = [...new Set(todosLosProductos.map((p) => p.id.split('/')[0]))];
+
+  return marcasSlugs.map((slug) => {
+    const productosDeEstaMarca = todosLosProductos.filter(
+      (p) => p.id.split('/')[0] === slug
+    );
+
+    return {
+      params: { marca: slug }, // esto define la URL: /marcas/konica-minolta
+      props: { productos: productosDeEstaMarca, marcaSlug: slug }, // esto llega como Astro.props acá abajo
+    };
+  });
+}
+
+const { productos, marcaSlug } = Astro.props;
+
+// Convierte "konica-minolta" en "Konica Minolta" para mostrarlo
+// como título. Funciona para cualquier marca sin tener que
+// escribir un mapa a mano ("konica-minolta" -> "Konica Minolta",
+// "sindoh" -> "Sindoh", etc.) -> mientras el slug de la carpeta
+// use guiones entre palabras, esto ya lo resuelve solo.
+const nombreMarca = marcaSlug
+  .split('-')
+  .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+  .join(' ');
+
+// Listas para armar los botones ("chips") de filtro. Separado en
+// datos + un .map() en el HTML, en vez de escribir cada botón a
+// mano, para que agregar una 4ta categoría el día de mañana sea
+// sumar una línea acá, no ir a buscar el botón en el HTML.
+const filtrosColor = [
+  { value: 'color', label: 'Color' },
+  { value: 'byn', label: 'Blanco y negro' },
+];
+const filtrosCategoria = [
+  { value: 'corporativo', label: 'Corporativo' },
+  { value: 'oficina', label: 'Oficina' },
+  { value: 'hogareno', label: 'Hogareño' },
+];
+---
+
+<Layout title={`${nombreMarca} | Tecnofot`}>
+  <main class="catalogo">
+    <div class="container">
+      <header class="catalogo__heading">
+        <p class="eyebrow">Marcas</p>
+        <h1 class="catalogo__title">{nombreMarca}</h1>
+      </header>
+
+      <div class="catalogo__controls">
+        <!-- Buscador por título. Es un <input type="search">, no
+             un <form>: no necesitamos enviar nada a ningún lado,
+             el filtrado pasa 100% en el navegador con JS (ver
+             script al final), así que ni siquiera hace falta un
+             botón de "Buscar". -->
+        <label class="catalogo__search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            type="search"
+            id="catalogo-buscador"
+            placeholder={`Buscar modelo de ${nombreMarca}...`}
+            aria-label="Buscar producto por título"
+          />
+        </label>
+
+        <div class="catalogo__filtros">
+          <div class="catalogo__filtro-grupo" role="group" aria-label="Filtrar por color">
+            <button class="chip is-active" data-grupo="color" data-valor="todos">Todos</button>
+            {filtrosColor.map((f) => (
+              <button class="chip" data-grupo="color" data-valor={f.value}>{f.label}</button>
+            ))}
+          </div>
+
+          <div class="catalogo__filtro-grupo" role="group" aria-label="Filtrar por categoría">
+            <button class="chip is-active" data-grupo="categoria" data-valor="todos">Todas</button>
+            {filtrosCategoria.map((f) => (
+              <button class="chip" data-grupo="categoria" data-valor={f.value}>{f.label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {productos.length === 0 ? (
+        <p class="catalogo__vacio">Todavía no hay productos cargados para {nombreMarca}.</p>
+      ) : (
+        <>
+          <div class="catalogo__grid" id="catalogo-grid">
+            {productos.map((producto, i) => (
+              <div
+                class="catalogo__item"
+                style={`--delay: ${i * 0.05}s`}
+                data-titulo={producto.data.titulo.toLowerCase()}
+                data-color={producto.data.color}
+                data-categoria={producto.data.categoria}
+              >
+                <ProductCard {...producto.data} />
+              </div>
+            ))}
+          </div>
+
+          <!-- Oculto por defecto (atributo "hidden"). El script lo
+               muestra solo cuando una búsqueda/filtro no deja
+               ningún producto visible. -->
+          <p class="catalogo__sin-resultados" id="catalogo-sin-resultados" hidden>
+            No encontramos modelos que coincidan con la búsqueda o los filtros elegidos.
+          </p>
+        </>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .catalogo {
+    --header-height: 63px; /* ver nota sobre centralizar esto en global.css */
+    padding-top: calc(var(--header-height) + 3rem);
+    padding-bottom: var(--space-section);
+  }
+
+  .catalogo__heading {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .catalogo__title {
+    font-size: var(--fs-h1, 2.5rem);
+    color: var(--color-text);
+    margin-top: 0.4rem;
+  }
+
+  .catalogo__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .catalogo__search {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt, var(--color-bg));
+    color: var(--color-ink-soft, var(--color-text));
+    transition: border-color 0.2s ease;
+  }
+
+  /* :focus-within se activa cuando el <input> DE ADENTRO tiene el
+     foco, aunque el borde que estamos coloreando esté en el
+     <label> de afuera. Es la forma correcta de resaltar todo el
+     "cajón" del buscador (ícono + input) al escribir, en vez de
+     depender del estilo de foco nativo, que solo dibujaría un
+     contorno alrededor del <input> y dejaría al ícono afuera. */
+  .catalogo__search:focus-within {
+    border-color: var(--color-cyan-dim, var(--color-border));
+  }
+
+  .catalogo__search input {
+    flex: 1;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-text);
+  }
+
+  .catalogo__search input:focus {
+    outline: none; /* ya mostramos el foco con el borde del label de arriba */
+  }
+
+  /* Safari/iOS le agrega un ícono nativo de "cancelar" (la X) a
+     los <input type="search"> que no se puede restylear bien -> en
+     vez de pelear con eso, nuestro propio ícono de lupa ya cumple
+     la función visual, así que ocultamos el nativo. */
+  .catalogo__search input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  .catalogo__filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .catalogo__filtro-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt, var(--color-bg));
+    color: var(--color-ink-soft, var(--color-text));
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .chip:hover {
+    border-color: var(--color-cyan-dim, var(--color-border));
+  }
+
+  /* Esta clase la agrega/saca el script de abajo, un chip a la vez
+     por grupo (no puede haber 2 chips activos del mismo grupo). */
+  .chip.is-active {
+    background: var(--color-cyan-dim, var(--color-text));
+    border-color: var(--color-cyan-dim, var(--color-text));
+    color: var(--color-bg);
+  }
+
+  .catalogo__grid {
+    display: grid;
+    grid-template-columns: 1fr; /* mobile: 1 columna */
+    gap: 1.25rem;
+  }
+
+  .catalogo__item {
+    /* "backwards" hace que el elemento se quede quieto en el
+       estado INICIAL de la animación (opacity 0, un poco más
+       abajo) durante el tiempo de --delay, en vez de aparecer de
+       golpe en su posición final y recién ahí empezar a animar.
+       Sin "backwards" se vería un pequeño "flash" de todas las
+       cards juntas antes de que arranque el efecto escalonado. */
+    animation: catalogo-item-in 0.5s ease backwards;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes catalogo-item-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .catalogo__item {
+      animation: none;
+    }
+  }
+
+  .catalogo__vacio,
+  .catalogo__sin-resultados {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-ink-soft, var(--color-text));
+  }
+
+  @media (min-width: 600px) {
+    .catalogo__controls {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .catalogo__search {
+      flex: 0 0 auto;
+      width: 280px;
+    }
+
+    .catalogo__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .catalogo__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
+<script>
+  // Todo el filtrado pasa acá, en el navegador, sobre las cards
+  // que Astro ya generó como HTML estático -> no hay ningún
+  // pedido a un servidor cada vez que escribís o tocás un chip,
+  // por eso se siente instantáneo. Con hasta 10 productos por
+  // marca, filtrar en el navegador es más que suficiente (no hace
+  // falta un buscador "de verdad" con backend).
+  const buscador = document.getElementById('catalogo-buscador');
+  const grilla = document.getElementById('catalogo-grid');
+  const sinResultados = document.getElementById('catalogo-sin-resultados');
+  const chips = document.querySelectorAll('.chip');
+
+  // Array.from(...) porque grilla.children es un "HTMLCollection"
+  // (una lista especial del DOM), no un array de JS de verdad, y
+  // no tiene métodos como .forEach en todos los navegadores viejos
+  // -> Array.from lo convierte en un array común y silvestre.
+  const items = grilla ? Array.from(grilla.children) : [];
+
+  // Guardamos acá el estado actual de los 3 filtros combinados.
+  // "todos" significa "no filtrar por esto".
+  const estado = { texto: '', color: 'todos', categoria: 'todos' };
+
+  const aplicarFiltros = () => {
+    let visibles = 0;
+
+    items.forEach((item) => {
+      const coincideTexto = item.dataset.titulo.includes(estado.texto);
+      const coincideColor = estado.color === 'todos' || item.dataset.color === estado.color;
+      const coincideCategoria =
+        estado.categoria === 'todos' || item.dataset.categoria === estado.categoria;
+
+      // Los 3 filtros son un "Y" (AND): tiene que cumplir el
+      // texto, Y el color (si hay uno elegido), Y la categoría (si
+      // hay una elegida). Si querés que sea un "O" entre color y
+      // categoría, avisame y cambiamos esta línea.
+      const visible = coincideTexto && coincideColor && coincideCategoria;
+
+      // El atributo "hidden" nativo del HTML equivale a
+      // "display: none" -> el navegador ya sabe sacarlo del layout
+      // sin que tengamos que escribir CSS extra para esto.
+      item.hidden = !visible;
+      if (visible) visibles++;
+    });
+
+    if (sinResultados) sinResultados.hidden = visibles > 0;
+  };
+
+  buscador?.addEventListener('input', (evento) => {
+    // .trim() saca espacios de más al principio/final, .toLowerCase()
+    // hace que la búsqueda no distinga mayúsculas de minúsculas
+    // (así "Bizhub" y "bizhub" encuentran lo mismo). Los data-titulo
+    // de cada card ya vienen en minúscula desde el frontmatter de
+    // arriba, así que acá solo hace falta bajar A minúscula el
+    // texto que escribe el usuario para que ambos lados coincidan.
+    estado.texto = evento.target.value.trim().toLowerCase();
+    aplicarFiltros();
+  });
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const grupo = chip.dataset.grupo; // "color" o "categoria"
+      const valor = chip.dataset.valor; // ej: "byn", "todos", "oficina"
+
+      estado[grupo] = valor;
+
+      // Dentro del MISMO grupo, solo un chip puede estar activo a
+      // la vez (no tendría sentido filtrar "Color" y "Blanco y
+      // negro" al mismo tiempo) -> le sacamos la clase a todos los
+      // chips de ese grupo antes de dársela solo al que tocaron.
+      document.querySelectorAll(`.chip[data-grupo="${grupo}"]`).forEach((c) => {
+        c.classList.remove('is-active');
+      });
+      chip.classList.add('is-active');
+
+      aplicarFiltros();
+    });
+  });
+</script>
