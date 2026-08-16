@@ -1,0 +1,9 @@
+{
+  "titulo": "bizhub 4750i",
+  "imagen": "/images/productos/konica-minolta/bizhub-4750i.jpg",
+  "descripcion": "Equipo blanco y negro de alto rendimiento, pensado para entornos corporativos con volúmenes de impresión elevados.",
+  "color": "byn",
+  "categoria": "corporativo",
+  "folletoPdf": "/pdfs/konica-minolta/bizhub-4750i.pdf",
+  "driversUrl": "https://www.konicaminolta.com.ar/es-ar/soporte/descarga-de-controladores"
+}
