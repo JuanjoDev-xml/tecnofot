@@ -66,7 +66,7 @@ const filtrosCategoria = [
 ];
 ---
 
-<Layout title={`${nombreMarca} | Tecnofot`}>
+<Layout title={`TECNOFOT | ${nombreMarca}`}>
   <main class="catalogo">
     <div class="container">
       <header class="catalogo__heading">
@@ -128,14 +128,15 @@ const filtrosCategoria = [
             ))}
           </div>
 
-          <!-- Oculto por defecto (atributo "hidden"). El script lo
-               muestra solo cuando una búsqueda/filtro no deja
-               ningún producto visible. -->
+          
           <p class="catalogo__sin-resultados" id="catalogo-sin-resultados" hidden>
             No encontramos modelos que coincidan con la búsqueda o los filtros elegidos.
           </p>
         </>
       )}
+      <!-- Oculto por defecto atributo "hidden. El script lo
+              muestra solo cuando una búsqueda/filtro no deja
+              ningún producto visible -->
     </div>
   </main>
 </Layout>
@@ -175,6 +176,8 @@ const filtrosCategoria = [
     background: var(--color-bg-alt, var(--color-bg));
     color: var(--color-ink-soft, var(--color-text));
     transition: border-color 0.2s ease;
+    flex: 1;
+    min-width: 50vw;
   }
 
   /* :focus-within se activa cuando el <input> DE ADENTRO tiene el
