@@ -68,7 +68,7 @@
      --space-section: clamp(3.5rem, 8vw, 7rem); /* padding vertical entre secciones */
      --radius: 14px;
    
-     --shadow-soft: 0 20px 40px -20px rgba(20, 22, 31, 0.18);
+     --shadow-soft: 0 20px 40px -15px rgba(214, 212, 224, 0.78);
    }
    
    /* ============================================================
@@ -112,6 +112,7 @@
      /* Sobre fondo blanco, el cyan puro pierde contraste como
         texto -> usamos la variante más oscura (cyan-dim). */
      --color-accent-text: var(--color-cyan-dim);
+     --shadow-soft: 0px 20px 40px -15px rgba(20, 22, 31, 0.18);
    }
    
    /* Transición suave al togglear el tema, en vez de un cambio
