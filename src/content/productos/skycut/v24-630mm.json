@@ -1,0 +1,9 @@
+{
+    "titulo": "Sky-Cut V24 Plotter de corte 630mm",
+    "imagen": "/images/productos/skycut/v24-630mm.webp",
+    "descripcion": "Plotter de corte compacto de 410mm, ideal para iniciarse o espacios reducidos. Fuerza de corte de 800g.",
+    "color": "byn",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/skycut/skycut.pdf",
+    "driversUrl": "https://skycutcutter.com/"
+}

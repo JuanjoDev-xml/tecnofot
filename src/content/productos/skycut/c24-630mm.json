@@ -1,0 +1,9 @@
+{
+    "titulo": "Sky-Cut C24 Plotter de corte 630mm con Wifi",
+    "imagen": "/images/productos/skycut/c24-630mm.webp",
+    "descripcion": "Plotter de corte grande de 630mm, ideal para corporaciones, cortes exigentes.",
+    "color": "byn",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/skycut/skycut.pdf",
+    "driversUrl": "https://skycutcutter.com/"
+}
