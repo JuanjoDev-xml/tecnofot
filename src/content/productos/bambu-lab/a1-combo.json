@@ -1,0 +1,9 @@
+{
+    "titulo": "A1 Combo",
+    "imagen": "/images/productos/bambu-lab/a1-combo.webp",
+    "descripcion": "Impresora 3D cartesiana con tecnología FDM y pantalla táctil, dimensión de impresión de 256x256x256 mm, extrusor directo, peso de 8,30kg.",
+    "color": "color",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/bambu-lab/bambu-lab.pdf",
+    "driversUrl": "https://bambulab.com/"
+}
