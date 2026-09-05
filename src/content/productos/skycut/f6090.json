@@ -1,0 +1,9 @@
+{
+    "titulo": "Sky-Cut F6090 Plotter de corte de cama plana",
+    "imagen": "/images/productos/skycut/f6090.webp",
+    "descripcion": "Plotter de corte de cama plana.",
+    "color": "byn",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/skycut/skycut.pdf",
+    "driversUrl": "https://skycutcutter.com/"
+}
