@@ -1,9 +1,9 @@
 {
     "titulo": "C315",
-    "imagen": "/images/productos/katun/c3135.webp",
+    "imagen": "/images/productos/katun/m3145.webp",
     "descripcion": "Equipo multifuncional a color Arivia con funciones de gestión remota para diagnósticos, actualizaciones y lecturas, flujo de trabajo de escaneo eficaz",
-    "color": "byn",
+    "color": "color",
     "categoria": "corporativo",
-    "folletoPdf": "/pdfs/katun/Folleto Arivia_M3145_M4155_cinpressed.pdf",
+    "folletoPdf": "/pdfs/katun/Folleto Arivia_C3135_C3145_C4155_C4165_compressed.pdf",
     "driversUrl": "https://katun.com/latam/hardware/arivia/resources"
 }
