@@ -68,7 +68,7 @@
      --space-section: clamp(3.5rem, 8vw, 7rem); /* padding vertical entre secciones */
      --radius: 14px;
    
-     --shadow-soft: 0 20px 40px -15px rgba(214, 212, 224, 0.78);
+     --shadow-soft: 0 20px 40px -15px rgba(214, 212, 224, 0.25);
    }
    
    /* ============================================================
