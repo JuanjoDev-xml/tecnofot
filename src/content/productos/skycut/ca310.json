@@ -3,7 +3,7 @@
     "imagen": "/images/productos/skycut/ca310.webp",
     "descripcion": "Plotter de corte para film compacto, ideal para espacios reducidos.",
     "color": "byn",
-    "categoria": "corporativo",
+    "categoria": "oficina",
     "folletoPdf": "/pdfs/skycut/skycut.pdf",
     "driversUrl": "https://skycutcutter.com/"
 }
