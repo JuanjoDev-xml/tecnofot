@@ -1,27 +1,5 @@
 ---
 // BrandsCarousel.astro
-// -----------------------------------------------------------
-// DECISIÓN: ¿React o no para el carrusel?
-//
-// No. Uso un "marquee" hecho con CSS puro (animación de
-// translateX en loop). Los motivos:
-//
-// 1. Astro ya renderiza HTML estático por defecto. Si metemos
-//    un componente React acá, Astro tiene que mandar al
-//    navegador el runtime de React + "hidratar" ese componente
-//    en el cliente, solo para mover unas imágenes de un lado
-//    a otro. Es peso y complejidad que no se justifican.
-// 2. Este carrusel NO necesita estado (no hay botones, no hay
-//    "página actual", nadie hace click para cambiar de marca).
-//    Es 100% decorativo/automático -> es el caso de uso ideal
-//    para CSS/JS plano, y el caso menos ideal para React.
-// 3. Regla general que te sirve para el resto del proyecto:
-//    usá React (o cualquier framework de UI) cuando un
-//    componente tiene ESTADO que cambia por interacción del
-//    usuario (un acordeón que se abre/cierra, un formulario
-//    con validaciones en vivo, un contador). Para animaciones
-//    automáticas o efectos visuales, CSS/JS puro alcanza y
-//    carga más rápido.
 //
 // Técnica: duplicamos la lista de logos una vez (brands + brands)
 // y animamos todo el contenedor con translateX(-50%) en loop
