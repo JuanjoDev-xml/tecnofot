@@ -4,6 +4,5 @@
     "descripcion": "Plotter de corte de film con app de control.",
     "color": "byn",
     "categoria": "corporativo",
-    "folletoPdf": "/pdfs/skycut/skycut.pdf",
     "driversUrl": "https://skycutcutter.com/"
 }

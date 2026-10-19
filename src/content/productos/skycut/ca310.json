@@ -4,6 +4,5 @@
     "descripcion": "Plotter de corte para film compacto, ideal para espacios reducidos.",
     "color": "byn",
     "categoria": "oficina",
-    "folletoPdf": "/pdfs/skycut/skycut.pdf",
     "driversUrl": "https://skycutcutter.com/"
 }

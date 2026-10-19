@@ -34,7 +34,9 @@ const productos = defineCollection({
     descripcion: z.string(),
     color: z.enum(['color', 'byn']),
     categoria: z.enum(['corporativo', 'oficina', 'hogareno']),
-    folletoPdf: z.string(),
+    // Opcional: si el producto no tiene folleto, se omite el campo
+    // en el JSON y la card no muestra el botón "Folleto".
+    folletoPdf: z.string().optional(),
     driversUrl: z.string().url(),
   }),
 });

@@ -15,7 +15,7 @@ interface Props {
   descripcion: string;
   color: 'color' | 'byn';
   categoria: 'corporativo' | 'oficina' | 'hogareno';
-  folletoPdf: string;
+  folletoPdf?: string;
   driversUrl: string;
 }
 
@@ -48,14 +48,18 @@ const categoriaLabels = { corporativo: 'Corporativo', oficina: 'Oficina', hogare
     <p class="product-card__desc">{descripcion}</p>
 
     <div class="product-card__actions">
-      <a class="product-card__btn product-card__btn--primary" href={folletoPdf} download target="_blank" rel="noopener noreferrer">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v12" />
-          <path d="M7 10l5 5 5-5" />
-          <path d="M4 19h16" />
-        </svg>
-        Folleto
-      </a>
+      <!-- Sin folleto no hay botón: el de Drivers (flex: 1) ocupa
+           todo el ancho solo, sin dejar un hueco. -->
+      {folletoPdf && (
+        <a class="product-card__btn product-card__btn--primary" href={folletoPdf} download target="_blank" rel="noopener noreferrer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12" />
+            <path d="M7 10l5 5 5-5" />
+            <path d="M4 19h16" />
+          </svg>
+          Folleto
+        </a>
+      )}
       <a class="product-card__btn product-card__btn--ghost" href={driversUrl} target="_blank" rel="noopener noreferrer">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M14 3h7v7" />
