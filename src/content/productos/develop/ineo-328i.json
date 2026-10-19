@@ -1,0 +1,9 @@
+{
+    "titulo": "ineo 328i",
+    "imagen": "/images/productos/develop/ineo-328i.webp",
+    "descripcion": "Multifunción blanco y negro A3 de 32 ppm con máxima seguridad de datos: protección avanzada contra actividad maliciosa y visibilidad de intentos de ciberataque. Alimentador de documentos que escanea hasta 70 imágenes por minuto y capacidad de papel de hasta 3.650 hojas.",
+    "color": "byn",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/develop/ineo-328i.pdf",
+    "driversUrl": "https://dl.develop.eu/"
+}

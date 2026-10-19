@@ -1,0 +1,9 @@
+{
+    "titulo": "DesignJet Smart Tank T908",
+    "imagen": "/images/productos/hp/designjet-t908.webp",
+    "descripcion": "Multifunción de gran formato de 36 pulgadas (914 mm) con depósito de tinta: imprime, escanea y copia. Hasta 120 impresiones A1 por hora, resolución de hasta 2400 x 1200 dpi, Wi-Fi y Gigabit Ethernet. Ideal para planos, mapas y pósters.",
+    "color": "color",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/hp/designjet-t908.pdf",
+    "driversUrl": "https://support.hp.com/ar-es/drivers"
+}

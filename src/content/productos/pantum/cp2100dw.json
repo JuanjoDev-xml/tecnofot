@@ -1,0 +1,9 @@
+{
+    "titulo": "CP2100DW",
+    "imagen": "/images/productos/pantum/cp2100dw.webp",
+    "descripcion": "Impresora láser color compacta de 20 ppm (A4) con impresión automática a doble cara, impresión silenciosa y marca de agua personalizada. Conexión USB, red, Wi-Fi y Bluetooth, con impresión desde el celular (AirPrint, Mopria y app de Pantum). Bandeja de 250 hojas y marco de metal. Ideal para el hogar y la oficina.",
+    "color": "color",
+    "categoria": "oficina",
+    "folletoPdf": "/pdfs/pantum/cp2100.pdf",
+    "driversUrl": "https://www.pantum.com.es/support/download/driver?s=CP2100DW"
+}
