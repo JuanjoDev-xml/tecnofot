@@ -1,9 +1,0 @@
-{
-    "titulo": "AMS Lite",
-    "imagen": "/images/productos/bambu-lab/ams-lite.webp",
-    "descripcion": "Sistema automático de alimentación de filamentos diseñado para impresoras 3D de Bambu Lab de la serie A1.",
-    "color": "color",
-    "categoria": "corporativo",
-    "folletoPdf": "/pdfs/bambu-lab/bambu-lab.pdf",
-    "driversUrl": "https://bambulab.com/"
-}

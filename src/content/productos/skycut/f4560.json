@@ -4,6 +4,5 @@
     "descripcion": "Plotter de corte de cama plana.",
     "color": "byn",
     "categoria": "corporativo",
-    "folletoPdf": "/pdfs/skycut/skycut.pdf",
     "driversUrl": "https://skycutcutter.com/"
 }

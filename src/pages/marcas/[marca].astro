@@ -46,10 +46,14 @@ const { productos, marcaSlug } = Astro.props;
 // escribir un mapa a mano ("konica-minolta" -> "Konica Minolta",
 // "sindoh" -> "Sindoh", etc.) -> mientras el slug de la carpeta
 // use guiones entre palabras, esto ya lo resuelve solo.
-const nombreMarca = marcaSlug
-  .split('-')
-  .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
-  .join(' ');
+// Excepción: las siglas ("hp" -> "HP", no "Hp") van en este mapa.
+const nombresEspeciales: Record<string, string> = { hp: 'HP' };
+const nombreMarca =
+  nombresEspeciales[marcaSlug] ??
+  marcaSlug
+    .split('-')
+    .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+    .join(' ');
 
 // Listas para armar los botones ("chips") de filtro. Separado en
 // datos + un .map() en el HTML, en vez de escribir cada botón a
