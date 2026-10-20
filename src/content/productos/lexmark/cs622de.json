@@ -1,0 +1,9 @@
+{
+    "titulo": "CS622de",
+    "imagen": "/images/productos/lexmark/cs622de.webp",
+    "descripcion": "Impresora láser color de 40 ppm (carta) con impresión dúplex integrada y pantalla táctil color de 4,3 pulgadas. Tóner de alto rendimiento y herramientas para controlar el consumo, Gigabit Ethernet y capacidad de papel ampliable hasta 1.450 hojas.",
+    "color": "color",
+    "categoria": "oficina",
+    "folletoPdf": "/pdfs/lexmark/cs622de.pdf",
+    "driversUrl": "https://www.lexmark.com"
+}

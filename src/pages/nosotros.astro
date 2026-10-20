@@ -19,12 +19,11 @@ import Layout from '../layouts/Layout.astro';
     <section class="nosotros__intro">
       <div class="container nosotros__intro-grid">
         <div class="nosotros__intro-image">
-          <!-- TODO: reemplazar por la imagen real (y la ruta,
-               según dónde la guardes en /public). Uso loading="lazy"
-               porque esta imagen está más abajo en la página, no
-               es lo primero que ve el usuario (a diferencia del
-               Hero, que sí carga "eager" por default al ser LCP). -->
-          <img src="/hero-bg-mobile.webp" alt="Equipo de Tecnofot" loading="lazy" />
+          <!-- Uso loading="lazy" porque esta imagen está más abajo
+               en la página, no es lo primero que ve el usuario (a
+               diferencia del Hero, que sí carga "eager" por default
+               al ser LCP). -->
+          <img src="/images/local-tecnofot.webp" alt="Frente del local de Tecnofot" width="1200" height="900" loading="lazy" />
         </div>
 
         <div class="nosotros__intro-text">
