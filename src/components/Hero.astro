@@ -73,16 +73,12 @@ const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.')
     background-position: center top;
     /* Imagen para MOBILE (esta regla aplica siempre que el
        @media de abajo NO se cumpla, o sea: pantallas angostas). */
-    background-image: url('/hero-bg-mobile.webp');
+    background-image: url('/images/hero-local-mobile.webp');
   }
 
-  /* A partir de 900px de ancho usamos la foto de desktop. Elegí
-     900px porque es el mismo breakpoint que ya usa el Header para
-     pasar del menú hamburguesa al menú horizontal -> mantenemos
-     un solo punto de corte "mobile vs desktop" en todo el sitio,
-     en vez de tener un breakpoint distinto por componente (eso
-     generaría un rango de anchos raro donde, por ejemplo, ya se
-     ve el menú de escritorio pero todavía la foto de celular). */
+  /* A partir de 600px de ancho usamos la foto de desktop; por
+     debajo va la foto vertical del local (recorte del frente con
+     el cartel y la persiana central). */
   @media (min-width: 600px) {
     .hero__bg {
       background-image: url('/hero-bg-desktop.webp');
