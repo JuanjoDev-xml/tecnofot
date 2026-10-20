@@ -3,7 +3,7 @@
     "imagen": "/images/productos/lexmark/mx711dhe.webp",
     "descripcion": "Multifunción láser monocromática de hasta 70 ppm: imprime, copia, escanea y envía fax. Pantalla táctil de 10,2 pulgadas, ADF dúplex de una sola pasada, disco duro incluido, procesador dual core y Gigabit Ethernet. Capacidad de papel de hasta 3.300 hojas, para 5.000 a 25.000 páginas por mes.",
     "color": "byn",
-    "categoria": "corporativo",
+    "categoria": "oficina",
     "folletoPdf": "/pdfs/lexmark/mx711dhe.pdf",
     "driversUrl": "https://www.lexmark.com"
 }
