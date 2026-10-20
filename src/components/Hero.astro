@@ -76,12 +76,16 @@ const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.')
     background-image: url('/images/hero-local-mobile.webp');
   }
 
-  /* A partir de 600px de ancho usamos la foto de desktop; por
-     debajo va la foto vertical del local (recorte del frente con
-     el cartel y la persiana central). */
+  /* A partir de 600px de ancho usamos la foto horizontal del
+     frente completo; por debajo va la foto vertical del local
+     (recorte con el cartel y la persiana central). */
   @media (min-width: 600px) {
     .hero__bg {
-      background-image: url('/hero-bg-desktop.webp');
+      background-image: url('/images/hero-local-desktop.webp');
+      /* El cartel de TECNOFOT está a la derecha de la foto: en
+         pantallas angostas/verticales (tablet) priorizamos esa
+         parte al recortar, en vez del centro. */
+      background-position: 85% top;
     }
   }
 
