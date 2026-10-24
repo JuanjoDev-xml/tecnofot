@@ -1,0 +1,9 @@
+{
+    "titulo": "WorkForce Enterprise AM-C4000",
+    "imagen": "/images/productos/epson/am-c4000.webp",
+    "descripcion": "Multifunción A3 color de 40 ppm en negro y color con tecnología PrecisionCore Heat-Free: imprime, copia y escanea con bajo mantenimiento y consumo. Pantalla táctil de 10,1 pulgadas, volumen mensual recomendado de 6.000 a 60.000 páginas y acabados opcionales de folletos, grapado, perforado y fax.",
+    "color": "color",
+    "categoria": "corporativo",
+    "folletoPdf": "/pdfs/epson/am-c4000.pdf",
+    "driversUrl": "https://latin.epson.com/soporte"
+}

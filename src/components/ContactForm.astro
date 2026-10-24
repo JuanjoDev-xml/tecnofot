@@ -10,20 +10,12 @@
 //
 // Para no complicar el proyecto con un backend propio (hosting
 // de servidor, base de datos, etc. — innecesario para un
-// formulario de contacto), la opción más simple y prolija es
-// usar un servicio de "manejo de formularios" como Formspree
-// (formspree.io) o Web3Forms (web3forms.com). Ambos tienen plan
-// gratuito, y el único cambio necesario es:
-//
-//   1. Crear una cuenta gratis en, por ejemplo, Formspree.
-//   2. Crear un formulario ahí apuntando a ventas@tecnofotsa.com.ar
-//   3. Reemplazar FORM_ENDPOINT más abajo por la URL que te den
-//      (algo como "https://formspree.io/f/xxxxxxx").
-//
-// Mientras tanto, dejo el formulario funcionando visualmente y
-// con validación, pero el envío real no va a funcionar hasta
-// que conectes ese endpoint.
-const FORM_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
+// formulario de contacto), usamos Formspree (formspree.io): el
+// cliente tiene la cuenta, y el formulario de ahí reenvía cada
+// mensaje por mail. Si alguna vez cambia el formulario o el
+// destinatario, se cambia en el panel de Formspree; acá solo va
+// la URL del formulario.
+const FORM_ENDPOINT = 'https://formspree.io/f/myeeyank';
 ---
 
 <section class="contact section" id="contacto">

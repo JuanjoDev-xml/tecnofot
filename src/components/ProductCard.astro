@@ -46,6 +46,12 @@ const categoriaLabels = { corporativo: 'Corporativo', oficina: 'Oficina', hogare
 
     <h3 class="product-card__title">{titulo}</h3>
     <p class="product-card__desc">{descripcion}</p>
+    <!-- Arranca oculto: el script de abajo lo muestra solo si la
+         descripción realmente quedó cortada por las 3 líneas. Sin
+         JS la card se ve igual que antes (texto recortado). -->
+    <button type="button" class="product-card__more" aria-expanded="false" hidden>
+      Ver más
+    </button>
 
     <div class="product-card__actions">
       <!-- Sin folleto no hay botón: el de Drivers (flex: 1) ocupa
@@ -171,6 +177,38 @@ const categoriaLabels = { corporativo: 'Corporativo', oficina: 'Oficina', hogare
     overflow: hidden;
   }
 
+  /* "Ver más": sin recorte. La card crece y, como la grilla estira
+     todas las cards de la fila a la misma altura, la fila entera
+     acompaña. */
+  .product-card__desc.is-expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+
+  .product-card__more {
+    align-self: flex-start;
+    margin-top: 0.35rem;
+    margin-bottom: 1rem;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-cyan-dim, var(--color-text));
+    cursor: pointer;
+  }
+
+  .product-card__more:hover {
+    text-decoration: underline;
+  }
+
+  .product-card__more:focus-visible {
+    outline: 2px solid var(--color-cyan-dim, currentColor);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
   .product-card__actions {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -213,3 +251,30 @@ const categoriaLabels = { corporativo: 'Corporativo', oficina: 'Oficina', hogare
     border: 1px solid var(--color-border);
   }
 </style>
+
+<script>
+  // Muestra "Ver más" solo en las cards cuya descripción no entra
+  // en las 3 líneas. Uso ResizeObserver en vez de medir una sola
+  // vez al cargar porque el corte cambia con el ancho de pantalla
+  // y porque las cards ocultas por los filtros miden 0 hasta que
+  // vuelven a aparecer -> el observer re-mide en esos dos casos.
+  document.querySelectorAll('.product-card').forEach((card) => {
+    const desc = card.querySelector('.product-card__desc');
+    const boton = card.querySelector('.product-card__more');
+    if (!(desc instanceof HTMLElement) || !(boton instanceof HTMLButtonElement)) return;
+
+    const actualizar = () => {
+      // Expandida, el botón tiene que quedar visible ("Ver menos").
+      if (desc.classList.contains('is-expanded')) return;
+      boton.hidden = desc.scrollHeight <= desc.clientHeight + 1;
+    };
+
+    new ResizeObserver(actualizar).observe(desc);
+
+    boton.addEventListener('click', () => {
+      const expandida = desc.classList.toggle('is-expanded');
+      boton.setAttribute('aria-expanded', String(expandida));
+      boton.textContent = expandida ? 'Ver menos' : 'Ver más';
+    });
+  });
+</script>
