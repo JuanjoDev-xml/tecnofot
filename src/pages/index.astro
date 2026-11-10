@@ -1,38 +1,32 @@
 ---
 // index.astro
 // -----------------------------------------------------------
-// Esta página arma el orden exacto que pediste: Hero -> Marcas
-// -> Nuestra empresa -> Ubicación -> Contacto. Cada sección es
-// un componente separado (ver src/components/) para que el
-// archivo se lea como un índice claro, y para poder reusar
-// piezas (como el Footer o el Header) en las 7 subpáginas que
-// vienen después.
+// Orden del home: Hero -> Qué hacemos -> Marcas -> Nuestra
+// empresa -> Ubicación -> Contacto. Cada sección es un
+// componente separado (ver src/components/) para que el archivo
+// se lea como un índice claro.
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
-import BrandsCarousel from '../components/BrandsCarousel.astro';
+import ServicesStrip from '../components/ServicesStrip.astro';
+import BrandsSheet from '../components/BrandsSheet.astro';
 import AboutSection from '../components/AboutSection.astro';
 import LocationMap from '../components/LocationMap.astro';
 import ContactForm from '../components/ContactForm.astro';
 import FloatingButtons from '../components/FloatingButtons.astro';
-
-// Fotos del Hero: poné acá 1 o varias rutas dentro de /public/images.
-// Con una sola, el Hero queda estático; con 2+ hace crossfade automático.
-const heroImages = ['/images/hero-1.webp'];
+import RevealOnScroll from '../components/RevealOnScroll.astro';
 
 // Logos de marcas: son marcas registradas de terceros (Sharp,
-// Brother, Konica Minolta, etc.), así que no las genero yo acá.
-// Pedile al cliente los logos oficiales (los puede sacar de la
-// web de cada fabricante o de su sitio viejo) y guardalos en
-// /public/brands/ con estos mismos nombres de archivo.
+// Brother, Konica Minolta, etc.). Van en /public/brands/ con
+// estos mismos nombres de archivo.
 const brands = [
   { name: 'Sharp', logo: '/brands/sharp.png' },
   { name: 'Brother', logo: '/brands/brother.png' },
   { name: 'Sindoh', logo: '/brands/sindoh.png' },
-  { name: 'Canon', logo: '/brands/canon.png', },
+  { name: 'Canon', logo: '/brands/canon.png' },
   { name: 'Konica Minolta', logo: '/brands/konica-minolta.png' },
-  { name: 'Develop', logo: '/brands/develop.png', },
-  { name: 'Epson', logo: '/brands/epson.png', },
-  { name: 'HP', logo: '/brands/hp.png', },
+  { name: 'Develop', logo: '/brands/develop.png' },
+  { name: 'Epson', logo: '/brands/epson.png' },
+  { name: 'HP', logo: '/brands/hp.png' },
   { name: 'Lexmark', logo: '/brands/lexmark.png' },
   { name: 'Skycut', logo: '/brands/skycut.webp' },
   { name: 'Bambu Lab', logo: '/brands/bambu-lab.webp' },
@@ -44,10 +38,67 @@ const brands = [
 ---
 
 <Layout title="TECNOFOT | Impresión y digitalización de documentos en Bahía Blanca">
-  <Hero images={heroImages} />
-  <BrandsCarousel brands={brands} />
+  <!-- Barra de avance de lectura: 4 tramos, uno por tinta. Se va
+       llenando a medida que se scrollea la página. -->
+  <div class="ink-progress" aria-hidden="true"><span id="ink-progress-bar"></span></div>
+
+  <Hero />
+  <ServicesStrip />
+  <BrandsSheet brands={brands} />
   <AboutSection />
   <LocationMap />
   <ContactForm />
   <FloatingButtons />
+
+  <RevealOnScroll />
+
+  <!-- Barra de avance de arriba. Inline, sin esperar a ningún
+       archivo JS. -->
+  <script is:inline>
+    (function () {
+      var root = document.documentElement;
+      var bar = document.getElementById('ink-progress-bar');
+      var ticking = false;
+      function update() {
+        var max = root.scrollHeight - window.innerHeight;
+        bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')';
+        ticking = false;
+      }
+      window.addEventListener(
+        'scroll',
+        function () {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        },
+        { passive: true }
+      );
+      update();
+    })();
+  </script>
 </Layout>
+
+<style>
+  .ink-progress {
+    position: fixed;
+    inset: 0 0 auto;
+    height: 3px;
+    z-index: 60; /* por encima del header (50) */
+    pointer-events: none;
+  }
+
+  .ink-progress span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--ink-c) 0 25%,
+      var(--ink-m) 25% 50%,
+      var(--ink-y) 50% 75%,
+      var(--color-text) 75% 100%
+    );
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+</style>

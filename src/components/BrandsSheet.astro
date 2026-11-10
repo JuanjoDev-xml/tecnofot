@@ -1,0 +1,176 @@
+---
+// BrandsSheet.astro
+// -----------------------------------------------------------
+// Reemplaza al carrusel de marcas en el home. En vez de logos
+// que pasan en movimiento (difíciles de clickear, y nunca ves
+// las 15 a la vez), están todas quietas sobre una "hoja impresa"
+// con sus marcas de corte. El fondo de la hoja es siempre blanco
+// porque los logos están pensados para fondo claro.
+interface Brand {
+  name: string;
+  logo: string;
+}
+
+interface Props {
+  brands: Brand[];
+}
+
+const { brands } = Astro.props;
+const slug = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
+---
+
+<section class="brands section" id="marcas">
+  <div class="container">
+    <header class="brands__intro" data-reveal>
+      <p class="eyebrow">Marcas</p>
+      <h2 class="brands__title">Trabajamos con las siguientes marcas</h2>
+      <p class="brands__subtitle">Equipos chicos, medianos y grandes. Elegí una para ver su catálogo.</p>
+    </header>
+
+    <div class="brands__sheet" data-reveal>
+      <span class="brands__crop brands__crop--tl" aria-hidden="true"></span>
+      <span class="brands__crop brands__crop--tr" aria-hidden="true"></span>
+      <span class="brands__crop brands__crop--bl" aria-hidden="true"></span>
+      <span class="brands__crop brands__crop--br" aria-hidden="true"></span>
+
+      <ul class="brands__grid">
+        {brands.map((b) => (
+          <li>
+            <a href={`/marcas/${slug(b.name)}`} class="brands__item" aria-label={`Ver equipos ${b.name}`}>
+              <img src={b.logo} alt={b.name} loading="lazy" />
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="brands__foot" aria-hidden="true">
+        <span class="brands__strip"><span></span><span></span><span></span><span></span></span>
+        <span class="brands__caption">{brands.length} marcas · distribuidor oficial</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .brands__intro {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .brands__title {
+    font-size: var(--fs-h2);
+  }
+
+  .brands__subtitle {
+    margin-top: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .brands__sheet {
+    position: relative;
+    background: var(--color-paper);
+    border-radius: 6px;
+    padding: clamp(1.5rem, 4vw, 2.75rem) clamp(1rem, 3.5vw, 2.5rem) clamp(1rem, 2.5vw, 1.5rem);
+    box-shadow:
+      0 0 0 1px rgba(20, 22, 31, 0.08),
+      0 30px 60px -30px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Marcas de corte en las 4 esquinas: dos rayitas en "L" */
+  .brands__crop {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 0 solid #14161f;
+    opacity: 0.55;
+  }
+  .brands__crop--tl { top: 10px; left: 10px; border-top-width: 1.5px; border-left-width: 1.5px; }
+  .brands__crop--tr { top: 10px; right: 10px; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .brands__crop--bl { bottom: 10px; left: 10px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .brands__crop--br { bottom: 10px; right: 10px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+  .brands__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  @media (min-width: 900px) {
+    .brands__grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+  }
+
+  .brands__item {
+    display: grid;
+    place-items: center;
+    height: clamp(72px, 12vw, 116px);
+    padding: 0.6rem;
+    border-radius: 12px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .brands__item img {
+    max-height: clamp(34px, 6vw, 60px);
+    max-width: 82%;
+    width: auto;
+    object-fit: contain;
+    /* Grises por defecto y a color al pasar el mouse: la hoja
+       queda pareja y el hover deja claro que se puede clickear. */
+    filter: grayscale(1) opacity(0.6);
+    transition: filter 0.25s ease, transform 0.25s ease;
+  }
+
+  .brands__item:hover,
+  .brands__item:focus-visible {
+    background: #eef4f8;
+  }
+
+  .brands__item:hover img,
+  .brands__item:focus-visible img {
+    filter: none;
+    transform: scale(1.07);
+  }
+
+  /* En táctil no hay hover: los logos van a color directamente. */
+  @media (hover: none) {
+    .brands__item img {
+      filter: none;
+    }
+  }
+
+  .brands__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(1rem, 2.5vw, 1.5rem);
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgba(20, 22, 31, 0.18);
+  }
+
+  .brands__strip {
+    display: inline-flex;
+  }
+
+  .brands__strip span {
+    width: 18px;
+    height: 18px;
+  }
+  .brands__strip span:nth-child(1) { background: var(--ink-c); }
+  .brands__strip span:nth-child(2) { background: var(--ink-m); }
+  .brands__strip span:nth-child(3) { background: var(--ink-y); }
+  .brands__strip span:nth-child(4) { background: var(--ink-k); }
+
+  .brands__caption {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5a6072;
+  }
+</style>

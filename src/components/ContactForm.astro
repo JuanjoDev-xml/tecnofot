@@ -20,7 +20,7 @@ const FORM_ENDPOINT = 'https://formspree.io/f/myeeyank';
 
 <section class="contact section" id="contacto">
   <div class="container contact__grid">
-    <div class="contact__intro">
+    <div class="contact__intro" data-reveal>
       <p class="eyebrow">Contacto</p>
       <h2 class="contact__title">Escribinos</h2>
       <p class="contact__text">
@@ -35,7 +35,7 @@ const FORM_ENDPOINT = 'https://formspree.io/f/myeeyank';
       </a>
     </div>
 
-    <form class="contact__form" action={FORM_ENDPOINT} method="POST" id="contact-form">
+    <form class="contact__form" action={FORM_ENDPOINT} method="POST" id="contact-form" data-reveal style="--reveal-delay: 0.12s">
       <div class="field">
         <label for="name">Nombre y apellido</label>
         <input id="name" name="name" type="text" required autocomplete="name" />

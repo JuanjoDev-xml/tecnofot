@@ -1,135 +1,775 @@
 ---
 // Hero.astro
 // -----------------------------------------------------------
-// Antes: recibía un array de imágenes y armaba un crossfade
-// automático entre ellas (pensado para poder rotar varias fotos).
-// Ahora: dos imágenes FIJAS, una para mobile y otra para desktop.
-// El navegador elige cuál mostrar solo, con CSS puro y un
-// @media query -> no hace falta JS, ni props, ni loop.
+// Concepto: una "prueba de imprenta" en 3D. La foto del frente
+// del local está separada en sus 4 tintas (cian, magenta,
+// amarillo y negro), cada una en una plancha transparente. Al
+// cargar la página las 4 planchas flotan separadas y se van
+// apilando hasta quedar "en registro" -> aparece la foto a todo
+// color. Es lo mismo que hace cualquier impresora por dentro.
 //
-// Dato importante sobre performance: aunque en el HTML/CSS
-// "aparecen" las dos imágenes (una regla para mobile, otra para
-// desktop dentro del @media), el navegador es lo bastante
-// inteligente como para descargar SOLO la que realmente va a
-// usar según el tamaño de pantalla. No hay que preocuparse por
-// estar bajando las dos de más.
+// Las planchas son archivos reales (public/images/hero-plates/)
+// generados a partir de la foto, no un filtro de CSS: así se ven
+// igual en todos los navegadores y no cuestan nada de CPU.
+import { getCollection } from 'astro:content';
+
 const whatsappNumber = '5492914070341'; // mismo número que ya usa el cliente
 const whatsappMsg = encodeURIComponent('Hola, me gustaría hacer una consulta.');
+
+// Datos reales para la fila de cifras: salen del catálogo y del
+// año de fundación, así se actualizan solos al cargar productos.
+const productos = await getCollection('productos');
+const totalEquipos = productos.length;
+const totalMarcas = new Set(productos.map((p) => p.id.split('/')[0])).size;
+const anios = new Date().getFullYear() - 1985;
+
+const cifras = [
+  { valor: anios, sufijo: '', label: 'años en Bahía Blanca' },
+  { valor: totalMarcas, sufijo: '', label: 'marcas' },
+  { valor: totalEquipos, sufijo: '', label: 'equipos en catálogo' },
+];
+
+// Orden de apilado (--i): el amarillo va abajo y el negro arriba,
+// que es además el orden clásico de impresión.
+const tintas = [
+  { id: 'c', letra: 'C', nombre: 'Cian', i: 3 },
+  { id: 'm', letra: 'M', nombre: 'Magenta', i: 2 },
+  { id: 'y', letra: 'Y', nombre: 'Amarillo', i: 1 },
+  { id: 'k', letra: 'K', nombre: 'Negro', i: 4 },
+];
 ---
 
-<section class="hero">
-  <div class="hero__bg">
-    <div class="hero__overlay"></div>
-    <!-- Acento "halftone": una trama de puntos que remite a la
-        trama de impresión CMYK. Es el elemento "firma" del sitio:
-        chico, sutil, pero ligado al rubro (impresión) en vez de
-        un gradiente decorativo genérico. -->
+<!-- Corre antes de pintar el hero: marca que hay JS, para que la
+     hoja arranque ya "desarmada" y no pegue un salto cuando el
+     script de abajo toma el control. Sin JS queda la foto armada. -->
+<script is:inline>
+  document.documentElement.classList.add('js');
+</script>
 
+<section class="hero" id="hero">
+  <div class="hero__bg" aria-hidden="true">
+    <span class="hero__blob hero__blob--c"></span>
+    <span class="hero__blob hero__blob--m"></span>
+    <span class="hero__blob hero__blob--y"></span>
+    <span class="hero__dots"></span>
   </div>
 
-  <div class="container hero__content">
-    <h1 class="hero__title">Digitalización <br> e impresión</h1>
-    <p class="hero__subtitle">Soluciones en el manejo de documentos y equipos conectados a la red con monitoreo inteligente</p>
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">
+        <span class="hero__inks" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        Bahía Blanca · desde 1985
+      </p>
 
-    <div class="hero__actions">
-      <a
-        class="btn btn--primary"
-        href={`https://wa.me/${whatsappNumber}?text=${whatsappMsg}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.19c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.11.11-1.79-.11a13.6 13.6 0 0 1-1.63-.6c-2.87-1.24-4.74-4.12-4.89-4.31-.15-.2-1.17-1.55-1.17-2.96s.73-2.1 1-2.39c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.15.11.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.27.36-.22.6-.13.24.09 1.55.73 1.81.86.27.14.44.2.51.31.07.12.07.66-.17 1.33Z"/>
-        </svg>
-        Hablar por WhatsApp
-      </a>
-      <a class="btn btn--secondary" href="#marcas">Conózcanos ↓</a>
+      <h1 class="hero__title">
+        Digitalización <br /> e <span class="hero__registro">impresión</span>
+      </h1>
+      <p class="hero__subtitle">
+        Soluciones en el manejo de documentos y equipos conectados a la red con monitoreo inteligente
+      </p>
+
+      <div class="hero__actions">
+        <a
+          class="btn btn--primary"
+          href={`https://wa.me/${whatsappNumber}?text=${whatsappMsg}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.19c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.11.11-1.79-.11a13.6 13.6 0 0 1-1.63-.6c-2.87-1.24-4.74-4.12-4.89-4.31-.15-.2-1.17-1.55-1.17-2.96s.73-2.1 1-2.39c.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.15.11.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.27.36-.22.6-.13.24.09 1.55.73 1.81.86.27.14.44.2.51.31.07.12.07.66-.17 1.33Z"/>
+          </svg>
+          Hablar por WhatsApp
+        </a>
+        <a class="btn hero__ghost" href="#servicios">Qué hacemos ↓</a>
+      </div>
+
+      <dl class="hero__stats">
+        {cifras.map((c) => (
+          <div class="hero__stat">
+            <dt>{c.label}</dt>
+            <dd><span data-count={c.valor}>{c.valor}</span>{c.sufijo}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    <div class="hero__press">
+      <div class="press" id="press">
+        <div class="press__sheet">
+          <!-- El papel: blanco, con las marcas de corte, las cruces
+               de registro y la tira de control de color que llevan
+               las pruebas de imprenta en los márgenes. -->
+          <div class="press__paper">
+            <svg viewBox="0 0 1000 760" aria-hidden="true">
+              <g stroke="#14161f" stroke-width="1.6" fill="none">
+                <path d="M50 14v24M14 50h24M950 14v24M962 50h24M50 662v24M14 650h24M950 662v24M962 650h24" />
+                <g transform="translate(25 350)"><circle r="9" /><path d="M-15 0h30M0-15v30" /></g>
+                <g transform="translate(975 350)"><circle r="9" /><path d="M-15 0h30M0-15v30" /></g>
+                <g transform="translate(500 25)"><circle r="9" /><path d="M-15 0h30M0-15v30" /></g>
+              </g>
+              <g transform="translate(50 694)">
+                <rect width="34" height="34" fill="#00aeef" />
+                <rect x="34" width="34" height="34" fill="#ec008c" />
+                <rect x="68" width="34" height="34" fill="#ffed00" />
+                <rect x="102" width="34" height="34" fill="#14161f" />
+                <rect x="136" width="34" height="34" fill="#00aeef" opacity="0.5" />
+                <rect x="170" width="34" height="34" fill="#ec008c" opacity="0.5" />
+                <rect x="204" width="34" height="34" fill="#ffed00" opacity="0.5" />
+                <rect x="238" width="34" height="34" fill="#14161f" opacity="0.5" />
+                <rect x="272" width="34" height="34" fill="#2e3192" />
+                <rect x="306" width="34" height="34" fill="#ed1c24" />
+                <rect x="340" width="34" height="34" fill="#00a651" />
+              </g>
+              <text x="950" y="717" text-anchor="end" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="15" letter-spacing="2" fill="#5a6072">
+                TECNOFOT · PRUEBA DE COLOR · CMYK
+              </text>
+            </svg>
+          </div>
+
+          <div class="press__stage">
+            <img
+              class="press__full"
+              src="/images/hero-plates/full.webp"
+              alt="Frente del local de Tecnofot en Thompson 309, Bahía Blanca"
+              width="900"
+              height="600"
+              fetchpriority="high"
+            />
+            {tintas.map((t) => (
+              <div class="press__plate" data-ink={t.id} style={`--i: ${t.i}`}>
+                <img src={`/images/hero-plates/plate-${t.id}.webp`} alt="" width="900" height="600" />
+                <span class="press__tag" aria-hidden="true">
+                  <span class="press__tag-dot"></span>{t.letra} · {t.nombre}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span class="press__shadow" aria-hidden="true"></span>
+      </div>
+
+      <div class="press__legend">
+        <p class="press__hint">Así imprime un equipo: 4 tintas, una sobre otra.</p>
+        <div class="press__chips" role="group" aria-label="Ver cada tinta por separado">
+          <button type="button" class="press__chip press__chip--all" id="press-toggle" aria-pressed="false">
+            Separar tintas
+          </button>
+          {tintas.map((t) => (
+            <button type="button" class="press__chip" data-ink={t.id} aria-pressed="false" aria-label={`Ver solo ${t.nombre}`}>
+              <span class="press__chip-dot" aria-hidden="true"></span>{t.letra}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   .hero {
+    --header-height: 63px;
     position: relative;
     min-height: 100svh;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     overflow: hidden;
-    color: var(--color-paper);
+    padding-block: calc(var(--header-height) + 2.5rem) clamp(2.5rem, 6vw, 4rem);
+    background: var(--color-bg);
+    color: var(--color-text);
   }
 
+  /* ---------- Fondo: tres manchas de tinta que derivan lento ---------- */
   .hero__bg {
     position: absolute;
     inset: 0;
     z-index: 0;
-    background-size: cover;
-    /* "center top" en vez de solo "center": en fotos verticales
-       (que es lo típico en la versión mobile) recortar desde el
-       centro exacto muchas veces corta cabezas o el punto de
-       interés de arriba. Con "top" priorizamos que se vea bien la
-       parte de arriba de la imagen aunque se recorte más abajo.
-       Si con tu foto mobile se ve mejor centrada, cambiá esto por
-       "center center". */
-    background-position: center top;
-    /* Imagen para MOBILE (esta regla aplica siempre que el
-       @media de abajo NO se cumpla, o sea: pantallas angostas). */
-    background-image: url('/images/hero-local-mobile.webp');
-  }
-
-  /* A partir de 600px de ancho usamos la foto horizontal del
-     frente completo; por debajo va la foto vertical del local
-     (recorte con el cartel y la persiana central). */
-  @media (min-width: 600px) {
-    .hero__bg {
-      background-image: url('/images/hero-local-desktop.webp');
-      /* El cartel de TECNOFOT está a la derecha de la foto: en
-         pantallas angostas/verticales (tablet) priorizamos esa
-         parte al recortar, en vez del centro. */
-      background-position: 85% top;
-    }
-  }
-
-  .hero__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      190deg,
-      rgba(20, 22, 31, 0.35) 0%,
-      rgba(20, 22, 31, 0.55) 55%,
-      rgba(46, 48, 146, 0.75) 100%
-    );
-  }
-
-  .hero__halftone {
-    position: absolute;
-    top: -30px;
-    right: -30px;
-    opacity: 0.35;
     pointer-events: none;
   }
 
-  .hero__content {
-    position: relative;
-    z-index: 1;
-    padding-block: 3rem clamp(3rem, 8vw, 5.5rem);
+  .hero__blob {
+    position: absolute;
+    width: clamp(260px, 42vw, 620px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.34;
+    /* "screen" suma luz: sobre fondo oscuro las tintas se mezclan
+       como luces de colores. En tema claro se cambia a "multiply",
+       que es como se mezclan las tintas de verdad sobre papel. */
+    mix-blend-mode: screen;
+    will-change: transform;
   }
 
+  .hero__blob--c {
+    background: var(--ink-c);
+    top: -18%;
+    right: 6%;
+    animation: blob-a 22s ease-in-out infinite alternate;
+  }
+
+  .hero__blob--m {
+    background: var(--ink-m);
+    bottom: -26%;
+    right: -8%;
+    animation: blob-b 27s ease-in-out infinite alternate;
+  }
+
+  .hero__blob--y {
+    background: var(--ink-y);
+    width: clamp(180px, 26vw, 380px);
+    bottom: -10%;
+    left: 30%;
+    opacity: 0.16;
+    animation: blob-c 31s ease-in-out infinite alternate;
+  }
+
+  @keyframes blob-a {
+    to { transform: translate(-14%, 18%) scale(1.15); }
+  }
+  @keyframes blob-b {
+    to { transform: translate(-22%, -16%) scale(0.9); }
+  }
+  @keyframes blob-c {
+    to { transform: translate(28%, -30%) scale(1.25); }
+  }
+
+  /* Trama de puntos (halftone), el "grano" de cualquier impreso */
+  .hero__dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--color-text) 1.1px, transparent 1.7px);
+    background-size: 16px 16px;
+    opacity: 0.12;
+    -webkit-mask-image: radial-gradient(ellipse 55% 75% at 88% 45%, #000 10%, transparent 72%);
+    mask-image: radial-gradient(ellipse 55% 75% at 88% 45%, #000 10%, transparent 72%);
+  }
+
+  :global([data-theme='light']) .hero__blob {
+    mix-blend-mode: multiply;
+    opacity: 0.2;
+  }
+  :global([data-theme='light']) .hero__blob--y {
+    opacity: 0.32;
+  }
+
+  /* ---------- Layout ---------- */
+  .hero__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4rem);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .hero__grid {
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    }
+  }
+
+  /* ---------- Texto ---------- */
+  .hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: var(--fs-small);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+    margin-bottom: 1.1rem;
+  }
+
+  .hero__inks {
+    display: inline-flex;
+  }
+
+  .hero__inks span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: -4px;
+    box-shadow: 0 0 0 2px var(--color-bg);
+  }
+  .hero__inks span:nth-child(1) { background: var(--ink-c); margin-left: 0; }
+  .hero__inks span:nth-child(2) { background: var(--ink-m); }
+  .hero__inks span:nth-child(3) { background: var(--ink-y); }
+  .hero__inks span:nth-child(4) { background: var(--ink-k); box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 3px var(--color-border); }
+
   .hero__title {
-    font-size: var(--fs-h1);
-    color: var(--color-paper);
+    font-size: clamp(2.5rem, 5.4vw + 0.8rem, 4.6rem);
+    color: var(--color-text);
+  }
+
+  /* "impresión" entra fuera de registro (las 3 tintas corridas)
+     y se acomoda, como cuando una impresora calibra. Queda un
+     corrimiento mínimo a propósito, como firma del sitio. */
+  .hero__registro {
+    display: inline-block;
+    text-shadow:
+      -0.03em 0 0 var(--ink-c),
+      0.03em 0.012em 0 var(--ink-m),
+      0 0.035em 0 color-mix(in srgb, var(--ink-y) 85%, transparent);
+    animation: registro 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s both;
+  }
+
+  @keyframes registro {
+    from {
+      text-shadow:
+        -0.34em -0.04em 0 var(--ink-c),
+        0.3em 0.06em 0 var(--ink-m),
+        0.05em 0.3em 0 var(--ink-y);
+    }
   }
 
   .hero__subtitle {
-    margin-top: 1rem;
-    font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-    color: rgba(255, 255, 255, 0.88);
-    max-width: 42ch;
+    margin-top: 1.1rem;
+    font-size: clamp(1.05rem, 1.3vw, 1.3rem);
+    color: var(--color-text-soft);
+    max-width: 40ch;
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.9rem;
-    margin-top: 2.25rem;
+    margin-top: 2rem;
+  }
+
+  .hero__ghost {
+    background: color-mix(in srgb, var(--color-text) 6%, transparent);
+    border-color: color-mix(in srgb, var(--color-text) 35%, transparent);
+    color: var(--color-text);
+  }
+
+  .hero__ghost:hover {
+    background: color-mix(in srgb, var(--color-text) 13%, transparent);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ---------- Cifras ---------- */
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 2.5rem 0 0;
+    max-width: 30rem;
+  }
+
+  .hero__stat {
+    display: flex;
+    flex-direction: column-reverse; /* número arriba, etiqueta abajo; en el HTML va <dt> primero */
+    gap: 0.2rem;
+    padding-top: 0.8rem;
+    border-top: 3px solid var(--ink-c);
+  }
+  .hero__stat:nth-child(2) { border-top-color: var(--ink-m); }
+  .hero__stat:nth-child(3) { border-top-color: var(--ink-y); }
+
+  .hero__stat dd {
+    margin: 0;
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
+  }
+
+  .hero__stat dt {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    color: var(--color-text-soft);
+  }
+
+  /* ---------- La hoja en 3D ---------- */
+  .hero__press {
+    min-width: 0;
+  }
+
+  .press {
+    --gap: clamp(24px, 4vw, 46px); /* separación entre planchas al desarmar */
+    position: relative;
+    width: min(100%, 560px);
+    margin-inline: auto;
+    perspective: 1400px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .press__sheet {
+    --spread: 0; /* 0 = planchas juntas (foto armada), 1 = separadas */
+    position: relative;
+    padding: 5% 5% 11%;
+    transform-style: preserve-3d;
+    transform: rotateX(6deg) rotateY(-12deg);
+    will-change: transform;
+  }
+
+  /* Con JS la hoja arranca desarmada, en la misma pose desde la
+     que el script empieza la animación de entrada. */
+  :global(.js) .press__sheet {
+    --spread: 1;
+    transform: scale(0.8) rotateX(54deg) rotateY(0deg) rotateZ(-32deg);
+  }
+
+  .press__paper {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow:
+      0 0 0 1px rgba(20, 22, 31, 0.08),
+      0 30px 60px -25px rgba(0, 0, 0, 0.55);
+  }
+
+  .press__paper svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .press__stage {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    transform-style: preserve-3d;
+    transform: translateZ(1px);
+  }
+
+  .press__full,
+  .press__plate,
+  .press__plate img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .press__full {
+    object-fit: cover;
+    /* Solo se ve con las planchas casi juntas: al separarlas se
+       desvanece y quedan a la vista las 4 tintas. */
+    opacity: calc(1 - var(--spread) * 6);
+  }
+
+  .press__plate {
+    transform: translateZ(calc(var(--spread) * var(--i) * var(--gap)));
+    opacity: calc(var(--spread) * 8);
+    /* Ojo: acá NO va mix-blend-mode. Sería lo "correcto" para
+       mezclar tintas, pero obliga al navegador a aplanar todo el
+       grupo y las planchas dejan de separarse en 3D. Como cada
+       plancha ya es tinta + transparencia, se ven bien igual. */
+    transition: opacity 0.3s ease;
+  }
+
+  /* Cada plancha se ve como una lámina de acetato: un velo blanco
+     apenas visible y un borde fino. Sin esto la plancha negra se
+     pierde contra el fondo oscuro del sitio. */
+  .press__plate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45), 0 10px 24px -12px rgba(0, 0, 0, 0.5);
+    opacity: calc(var(--spread) * 2 - 0.4);
+  }
+
+  .press[data-solo] .press__plate {
+    opacity: 0.07;
+  }
+  .press[data-solo='c'] .press__plate[data-ink='c'],
+  .press[data-solo='m'] .press__plate[data-ink='m'],
+  .press[data-solo='y'] .press__plate[data-ink='y'],
+  .press[data-solo='k'] .press__plate[data-ink='k'] {
+    opacity: 1;
+  }
+
+  .press__tag {
+    position: absolute;
+    left: 0.6rem;
+    top: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    background: #fff;
+    color: #14161f;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    opacity: calc(var(--spread) * 3 - 1.4);
+  }
+
+  .press__tag-dot,
+  .press__chip-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  [data-ink='c'] { --ink: var(--ink-c); }
+  [data-ink='m'] { --ink: var(--ink-m); }
+  [data-ink='y'] { --ink: var(--ink-y); }
+  [data-ink='k'] { --ink: var(--ink-k); }
+
+  .press__shadow {
+    position: absolute;
+    inset: auto 10% -9% 10%;
+    height: 12%;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5), transparent 70%);
+    filter: blur(14px);
+    z-index: -1;
+  }
+
+  /* ---------- Leyenda / controles ---------- */
+  .press__legend {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    margin-top: clamp(2rem, 5vw, 3rem);
+    text-align: center;
+  }
+
+  .press__hint {
+    font-size: 0.9rem;
+    color: var(--color-text-soft);
+  }
+
+  .press__chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .press__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-bg-alt) 80%, transparent);
+    color: var(--color-text);
+    font-size: 0.82rem;
+    font-weight: 700;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  }
+
+  .press__chip:hover {
+    border-color: var(--color-accent-text);
+    transform: translateY(-1px);
+  }
+
+  .press__chip[aria-pressed='true'] {
+    background: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .press__chip[data-ink='k'] .press__chip-dot {
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+
+  /* En pantallas angostas los 5 botones tienen que entrar en una
+     sola fila (si no, la "K" queda sola abajo). */
+  @media (max-width: 420px) {
+    .press__chips {
+      gap: 0.3rem;
+    }
+    .press__chip {
+      padding-inline: 0.6rem;
+      font-size: 0.78rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__blob,
+    .hero__registro {
+      animation: none;
+    }
   }
 </style>
+
+<script>
+  // ---------- Hoja 3D: animación de entrada, mouse, scroll y botones ----------
+  // Todo se resuelve con UN estado (cuánto están separadas las
+  // planchas + la inclinación de la hoja) que se va acercando de a
+  // poco a un "objetivo". Cada interacción solo cambia el objetivo;
+  // el loop de abajo hace el movimiento suave.
+  const press = document.getElementById('press');
+  const sheet = press?.querySelector<HTMLElement>('.press__sheet');
+  const hero = document.getElementById('hero');
+
+  if (press && sheet && hero) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const toggleBtn = document.getElementById('press-toggle');
+    const chips = Array.from(press.parentElement!.querySelectorAll<HTMLButtonElement>('.press__chip[data-ink]'));
+
+    const REST = { spread: 0, rx: 6, ry: -12, rz: 0, s: 1 };
+    const OPEN = { spread: 1, rx: 54, ry: 0, rz: -32, s: 0.8 };
+    const cur = { ...OPEN }; // arranca desarmada (misma pose que el CSS de .js)
+
+    let intro = true; // durante la entrada se mantiene desarmada
+    let pinned = false; // "Separar tintas" activado
+    let solo: string | null = null; // tinta aislada (c, m, y, k)
+    let hovering = false;
+    let scrollOpen = 0; // 0..1 según cuánto se fue la hoja de la pantalla
+    let px = 0; // posición del mouse sobre el hero, de -1 a 1
+    let py = 0;
+    let visible = true;
+    let raf = 0;
+    let last = 0;
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+
+    const target = (time: number) => {
+      const open = intro || pinned || solo ? 1 : Math.max(scrollOpen, hovering ? 0.42 : 0);
+      // Balanceo suave cuando nadie la toca, para que se note que es 3D.
+      const idle = open < 0.05 && !hovering && !reduceMotion ? 1 : 0;
+      const rx = REST.rx - py * 9 + idle * Math.cos(time / 2300) * 2.2;
+      const ry = REST.ry + px * 13 + idle * Math.sin(time / 1900) * 3.5;
+      return {
+        spread: open,
+        rx: lerp(rx, OPEN.rx, open),
+        ry: lerp(ry, OPEN.ry, open),
+        rz: lerp(REST.rz, OPEN.rz, open),
+        s: lerp(REST.s, OPEN.s, open),
+      };
+    };
+
+    const paint = () => {
+      sheet.style.setProperty('--spread', cur.spread.toFixed(4));
+      sheet.style.transform = `scale(${cur.s.toFixed(4)}) rotateX(${cur.rx.toFixed(2)}deg) rotateY(${cur.ry.toFixed(2)}deg) rotateZ(${cur.rz.toFixed(2)}deg)`;
+    };
+
+    const frame = (time: number) => {
+      const dt = Math.min(64, time - (last || time));
+      last = time;
+      const t = target(time);
+      const k = reduceMotion ? 1 : 1 - Math.exp(-dt / 170);
+      (Object.keys(cur) as (keyof typeof cur)[]).forEach((key) => {
+        cur[key] = lerp(cur[key], t[key], k);
+      });
+      paint();
+      raf = visible ? requestAnimationFrame(frame) : 0;
+    };
+
+    const start = () => {
+      if (!raf && visible) {
+        last = 0;
+        raf = requestAnimationFrame(frame);
+      }
+    };
+
+    // No gastamos batería animando si el hero no está en pantalla.
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) start();
+    }).observe(hero);
+
+    // Entrada: la foto se arma recién cuando (1) están cargadas las
+    // 4 planchas (o pasó 1,5 s) y (2) la hoja está a la vista. Lo
+    // segundo importa en el celular, donde la hoja queda debajo del
+    // texto: sin esto la animación pasaría sin que nadie la vea.
+    const imgs = Array.from(sheet.querySelectorAll('img'));
+    const loaded = Promise.all(imgs.map((img) => img.decode().catch(() => undefined)));
+    const timeout = new Promise((resolve) => setTimeout(resolve, 1500));
+    const seen = new Promise<void>((resolve) => {
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            io.disconnect();
+            resolve();
+          }
+        },
+        { threshold: 0.35 }
+      );
+      io.observe(press);
+    });
+    Promise.all([Promise.race([loaded, timeout]), seen]).then(() => {
+      setTimeout(() => (intro = false), reduceMotion ? 0 : 900);
+    });
+
+    if (finePointer) {
+      hero.addEventListener('pointermove', (e) => {
+        const r = hero.getBoundingClientRect();
+        px = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
+        py = clamp(((e.clientY - r.top) / r.height) * 2 - 1, -1, 1);
+      });
+      hero.addEventListener('pointerleave', () => {
+        px = 0;
+        py = 0;
+      });
+      press.addEventListener('pointerenter', () => (hovering = true));
+      press.addEventListener('pointerleave', () => (hovering = false));
+    }
+
+    // Al scrollear, la hoja se va desarmando mientras sale de pantalla.
+    const onScroll = () => {
+      const r = press.getBoundingClientRect();
+      const center = r.top + r.height / 2;
+      const vh = window.innerHeight;
+      scrollOpen = clamp((vh * 0.3 - center) / (vh * 0.4));
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    const sync = () => {
+      toggleBtn?.setAttribute('aria-pressed', String(pinned));
+      if (toggleBtn) toggleBtn.textContent = pinned ? 'Volver a armar' : 'Separar tintas';
+      chips.forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.ink === solo)));
+      if (solo) press.dataset.solo = solo;
+      else delete press.dataset.solo;
+      start();
+    };
+
+    const togglePinned = () => {
+      intro = false;
+      pinned = solo ? false : !pinned; // con una tinta aislada, el primer toque vuelve a armar
+      solo = null;
+      sync();
+    };
+
+    press.addEventListener('click', togglePinned);
+    toggleBtn?.addEventListener('click', togglePinned);
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        intro = false;
+        solo = solo === chip.dataset.ink ? null : chip.dataset.ink ?? null;
+        pinned = solo !== null;
+        sync();
+      });
+    });
+
+    start();
+  }
+
+  // ---------- Cifras: cuentan desde 0 al entrar ----------
+  const counters = document.querySelectorAll<HTMLElement>('.hero__stat [data-count]');
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    counters.forEach((el) => {
+      const end = Number(el.dataset.count);
+      const t0 = performance.now() + 350;
+      const tick = (now: number) => {
+        const p = Math.min(1, Math.max(0, (now - t0) / 1300));
+        el.textContent = String(Math.round(end * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      el.textContent = '0';
+      requestAnimationFrame(tick);
+    });
+  }
+</script>

@@ -19,7 +19,7 @@ const antiguedad = currentYear - anioFundacion;
 
 <section class="about section">
   <div class="container about__grid">
-    <div class="about__copy">
+    <div class="about__copy" data-reveal>
       <p class="eyebrow">Nuestra empresa</p>
       <h2 class="about__title">Más de {antiguedad} años acompañando a empresas de Bahía Blanca</h2>
       <p class="about__text">
@@ -33,16 +33,7 @@ const antiguedad = currentYear - anioFundacion;
       </a>
     </div>
 
-    <div class="about__media">
-      <svg class="about__halftone" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
-        <defs>
-          <pattern id="dots-about" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="3" cy="3" r="2.3" fill="var(--color-cyan)" />
-          </pattern>
-        </defs>
-        <rect width="120" height="120" fill="url(#dots-about)" />
-      </svg>
-
+    <div class="about__media" data-reveal style="--reveal-delay: 0.12s">
       <img
         src="/images/nuestra-empresa.webp"
         alt="Equipo técnico de Tecnofot trabajando"
@@ -92,12 +83,32 @@ const antiguedad = currentYear - anioFundacion;
     position: relative;
   }
 
-  .about__halftone {
+  /* Marco "fuera de registro": dos copias del rectángulo de la
+     foto, una cian y una magenta, corridas para lados opuestos
+     (más un filo amarillo). Al pasar el mouse se acomodan detrás
+     de la foto, como una impresión que entra en registro. */
+  .about__media::before,
+  .about__media::after {
+    content: '';
     position: absolute;
-    top: -20px;
-    left: -20px;
-    opacity: 0.5;
-    z-index: 0;
+    inset: 0;
+    border-radius: var(--radius);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .about__media::before {
+    background: var(--ink-c);
+    transform: translate(-12px, -12px);
+  }
+
+  .about__media::after {
+    background: var(--ink-m);
+    transform: translate(12px, 12px);
+  }
+
+  .about__media:hover::before,
+  .about__media:hover::after {
+    transform: none;
   }
 
   .about__img {
@@ -107,6 +118,12 @@ const antiguedad = currentYear - anioFundacion;
     aspect-ratio: 4 / 3;
     object-fit: cover;
     border-radius: var(--radius);
+    box-shadow: 6px -6px 0 var(--ink-y);
+    transition: box-shadow 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .about__media:hover .about__img {
+    box-shadow: 0 0 0 var(--ink-y);
   }
 
   .about__badge {
