@@ -150,9 +150,9 @@ const tintas = [
 
       <div class="press__legend">
         <p class="press__hint">Así imprime un equipo: 4 colores, uno sobre otro.</p>
-        <div class="press__chips" role="group" aria-label="Ver cada tinta por separado">
+        <div class="press__chips" role="group" aria-label="Ver cada color por separado">
           <button type="button" class="press__chip press__chip--all" id="press-toggle" aria-pressed="false">
-            Separar tintas
+            Separar colores
           </button>
           {tintas.map((t) => (
             <button type="button" class="press__chip" data-ink={t.id} aria-pressed="false" aria-label={`Ver solo ${t.nombre}`}>
@@ -639,7 +639,7 @@ const tintas = [
     const cur = { ...OPEN }; // arranca desarmada (misma pose que el CSS de .js)
 
     let intro = true; // durante la entrada se mantiene desarmada
-    let pinned = false; // "Separar tintas" activado
+    let pinned = false; // "Separar colores" activado
     let solo: string | null = null; // tinta aislada (c, m, y, k)
     let hovering = false;
     let scrollOpen = 0; // 0..1 según cuánto se fue la hoja de la pantalla
@@ -746,7 +746,7 @@ const tintas = [
 
     const sync = () => {
       toggleBtn?.setAttribute('aria-pressed', String(pinned));
-      if (toggleBtn) toggleBtn.textContent = pinned ? 'Volver a armar' : 'Separar tintas';
+      if (toggleBtn) toggleBtn.textContent = pinned ? 'Volver a armar' : 'Separar colores';
       chips.forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.ink === solo)));
       if (solo) press.dataset.solo = solo;
       else delete press.dataset.solo;
