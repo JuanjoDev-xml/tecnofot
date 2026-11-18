@@ -26,6 +26,16 @@
      --color-cyan-dim: #5bb9dd;    /* variante más oscura del cyan, para usarlo como TEXTO legible sobre fondos claros */
      --color-indigo: #2e3092;
      --color-indigo-deep: #21235f;
+
+     /* --- Tintas de impresión (CMYK) ---
+        Los cuatro colores con los que imprime cualquier equipo:
+        cian, magenta, amarillo y negro ("key"). Se usan como
+        acentos puntuales (tira de control, marcas de registro,
+        detalles de las cards), nunca como color de texto largo. */
+     --ink-c: #00aeef;
+     --ink-m: #ec008c;
+     --ink-y: #ffed00;
+     --ink-k: #14161f;
    
      /* --color-accent es el color de marca que usamos para CTAs,
         links destacados e íconos: antes era el índigo, ahora es el
@@ -192,6 +202,13 @@
    
    .section--alt {
      background: var(--color-bg-alt);
+   }
+
+   /* Al saltar a una sección por ancla (#servicios, #contacto...),
+      dejamos el alto del header fijo como margen: si no, el
+      título de la sección queda tapado debajo del header. */
+   section[id] {
+     scroll-margin-top: 64px;
    }
    
    .eyebrow {

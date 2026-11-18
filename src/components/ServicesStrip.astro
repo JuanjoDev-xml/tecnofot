@@ -1,0 +1,283 @@
+---
+// ServicesStrip.astro
+// -----------------------------------------------------------
+// Resumen de "qué hacemos" apenas termina el Hero: lo mismo que
+// dice el cartel del local (venta, alquiler, service, insumos).
+// Los textos son versiones cortas de los de /servicios, no hay
+// nada inventado. Cada card lleva una de las 4 tintas (C, M, Y,
+// K) para seguir el hilo del Hero.
+const servicios = [
+  {
+    tinta: 'c',
+    letra: 'C',
+    titulo: 'Venta directa',
+    texto: 'Equipos para cada necesidad, con instalación, calibración y curso para el usuario incluidos.',
+    href: '/servicios',
+    cta: 'Ver servicios',
+    iconPaths: ['M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z', 'M3 8.5v7L12 20l9-4.5v-7', 'M12 13v7'],
+  },
+  {
+    tinta: 'm',
+    letra: 'M',
+    titulo: 'Alquiler',
+    texto: 'Un costo fijo mensual según tu volumen de impresión, con servicio técnico, insumos y mesa de ayuda.',
+    href: '/servicios',
+    cta: 'Ver servicios',
+    iconPaths: ['M4 5.5h16v15H4v-15Z', 'M4 10h16', 'M8 3v4', 'M16 3v4'],
+  },
+  {
+    tinta: 'y',
+    letra: 'Y',
+    titulo: 'Soluciones técnicas',
+    texto: 'Capacitación, soporte y configuración, más repuestos y mano de obra especializada.',
+    href: '/servicios',
+    cta: 'Ver servicios',
+    iconPaths: [
+      'M14.5 3.5a4.5 4.5 0 0 0-5.9 5l-6.1 6.1a2 2 0 0 0 2.8 2.8L11.4 11a4.5 4.5 0 0 0 5.9-5.9l-2.6 2.6-2-2 2.6-2.6Z',
+    ],
+  },
+  {
+    tinta: 'k',
+    letra: 'K',
+    titulo: 'Insumos',
+    texto: 'Provisión de insumos para tus equipos. Consultanos por el que necesitás.',
+    href: '/#contacto',
+    cta: 'Consultar',
+    iconPaths: ['M12 3s6 6.3 6 10.6A6 6 0 0 1 6 13.6C6 9.3 12 3 12 3Z', 'M9.5 14a2.5 2.5 0 0 0 2.5 2.5'],
+  },
+];
+---
+
+<section class="svc section section--alt" id="servicios">
+  <div class="container">
+    <header class="svc__intro" data-reveal>
+      <p class="eyebrow">Qué hacemos</p>
+      <h2 class="svc__title">Venta, alquiler y servicio técnico</h2>
+    </header>
+
+    <ul class="svc__grid">
+      {servicios.map((s, i) => (
+        <li data-reveal style={`--reveal-delay: ${i * 0.08}s`}>
+          <a class="svc-card" href={s.href} data-ink={s.tinta}>
+            <span class="svc-card__glow" aria-hidden="true"></span>
+            <span class="svc-card__dots" aria-hidden="true"></span>
+            <span class="svc-card__letter" aria-hidden="true">{s.letra}</span>
+
+            <span class="svc-card__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                {s.iconPaths.map((d) => <path d={d} />)}
+              </svg>
+            </span>
+
+            <h3 class="svc-card__title">{s.titulo}</h3>
+            <p class="svc-card__text">{s.texto}</p>
+            <span class="svc-card__more">
+              {s.cta}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .svc__intro {
+    max-width: 40rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .svc__title {
+    font-size: var(--fs-h2);
+  }
+
+  .svc__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  @media (min-width: 620px) {
+    .svc__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1040px) {
+    .svc__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  .svc__grid li {
+    display: flex;
+    /* perspective va en el padre directo de la card: es lo que le
+       da profundidad a la inclinación 3D de más abajo. */
+    perspective: 1000px;
+  }
+
+  /* Tinta de cada card. La "K" (negro) usa el color de texto del
+     tema: un negro puro no se vería en modo oscuro. */
+  .svc-card[data-ink='c'] { --ink: var(--ink-c); }
+  .svc-card[data-ink='m'] { --ink: var(--ink-m); }
+  .svc-card[data-ink='y'] { --ink: var(--ink-y); }
+  .svc-card[data-ink='k'] { --ink: var(--color-text); }
+
+  .svc-card {
+    /* --tx / --ty: posición del mouse sobre la card, de -1 a 1.
+       Los setea el script de abajo; en reposo valen 0. */
+    --tx: 0;
+    --ty: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.6rem 1.4rem 1.4rem;
+    border-radius: 18px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    text-decoration: none;
+    overflow: hidden;
+    transform: rotateX(calc(var(--ty) * -7deg)) rotateY(calc(var(--tx) * 7deg));
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  /* Franja de tinta arriba, como el lomo de un cartucho */
+  .svc-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: var(--ink);
+  }
+
+  .svc-card:hover,
+  .svc-card:focus-visible {
+    border-color: color-mix(in srgb, var(--ink) 55%, var(--color-border));
+    box-shadow: 0 22px 40px -22px color-mix(in srgb, var(--ink) 60%, transparent);
+  }
+
+  /* Mientras el mouse está encima, la card sigue al cursor sin
+     demora (si no, la transición la haría "arrastrarse"). */
+  .svc-card.is-tilting {
+    transition: transform 0.08s linear, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  /* Brillo de tinta que sigue al mouse */
+  .svc-card__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at calc(50% + var(--tx) * 50%) calc(50% + var(--ty) * 50%),
+      color-mix(in srgb, var(--ink) 22%, transparent),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .svc-card:hover .svc-card__glow {
+    opacity: 1;
+  }
+
+  /* Trama de puntos en la esquina, en la tinta de la card */
+  .svc-card__dots {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 65%;
+    aspect-ratio: 1;
+    background-image: radial-gradient(circle, var(--ink) 1.3px, transparent 1.9px);
+    background-size: 11px 11px;
+    opacity: 0.28;
+    -webkit-mask-image: radial-gradient(circle at 100% 0, #000, transparent 68%);
+    mask-image: radial-gradient(circle at 100% 0, #000, transparent 68%);
+    transition: opacity 0.3s ease, transform 0.5s ease;
+  }
+
+  .svc-card:hover .svc-card__dots {
+    opacity: 0.7;
+    transform: scale(1.12);
+    transform-origin: 100% 0;
+  }
+
+  .svc-card__letter {
+    position: absolute;
+    top: 0.9rem;
+    right: 1.1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--color-text-soft);
+  }
+
+  .svc-card__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ink) 16%, transparent);
+    color: var(--color-text);
+    margin-bottom: 1.25rem;
+  }
+
+  .svc-card__title {
+    position: relative;
+    font-size: 1.2rem;
+  }
+
+  .svc-card__text {
+    position: relative;
+    margin-top: 0.55rem;
+    font-size: 0.95rem;
+    flex: 1;
+  }
+
+  .svc-card__more {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-accent-text);
+  }
+
+  .svc-card__more svg {
+    transition: transform 0.2s ease;
+  }
+
+  .svc-card:hover .svc-card__more svg {
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-card {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Inclinación 3D de las cards siguiendo al mouse. Solo en
+  // dispositivos con mouse de verdad: en táctil no hay "hover".
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll<HTMLElement>('.svc-card').forEach((card) => {
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--tx', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+        card.style.setProperty('--ty', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+        card.classList.add('is-tilting');
+      });
+      card.addEventListener('pointerleave', () => {
+        card.classList.remove('is-tilting');
+        card.style.setProperty('--tx', '0');
+        card.style.setProperty('--ty', '0');
+      });
+    });
+  }
+</script>

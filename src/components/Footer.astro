@@ -3,6 +3,7 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
+  <div class="footer__strip" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
   <div class="container footer__grid">
     <div>
       <a href="https://tecnofot.com.ar"><img class="footer__logo" src="/logo.png"></a>
@@ -42,7 +43,22 @@ const year = new Date().getFullYear();
     background: var(--color-ink);
     color: rgba(255, 255, 255, 0.75);
     padding-top: 3.5rem;
+    position: relative;
   }
+
+  /* Tira de control: los 4 colores de impresión, como en el
+     margen de cualquier hoja que sale de imprenta. */
+  .footer__strip {
+    position: absolute;
+    inset: 0 0 auto;
+    display: flex;
+    height: 4px;
+  }
+  .footer__strip span { flex: 1; }
+  .footer__strip span:nth-child(1) { background: var(--ink-c); }
+  .footer__strip span:nth-child(2) { background: var(--ink-m); }
+  .footer__strip span:nth-child(3) { background: var(--ink-y); }
+  .footer__strip span:nth-child(4) { background: #fff; opacity: 0.85; }
 
   .footer__grid {
     display: grid;
