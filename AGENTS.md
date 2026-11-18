@@ -8,6 +8,12 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Ramas y deploy
+
+- Se trabaja en `develop`. `main` es producción: Vercel publica desde `main`, así que pasar algo a `main` es publicarlo.
+- `develop` se pasa a `main` con un merge (antes por PR en GitHub). `gh` no está instalado acá: el merge se hace con git local (`--no-ff`) y push.
+- Cambios a prueba del cliente: rama aparte desde `develop`, y se mergea recién cuando el cliente aprueba.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
