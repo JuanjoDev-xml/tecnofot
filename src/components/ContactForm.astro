@@ -156,6 +156,14 @@ const FORM_ENDPOINT = 'https://formspree.io/f/myeeyank';
     margin-top: 0.5rem;
   }
 
+  /* En el celular, botón a todo el ancho (mismo criterio que el hero) */
+  @media (max-width: 599px) {
+    .contact__submit {
+      justify-self: stretch;
+      justify-content: center;
+    }
+  }
+
   .contact__status {
     font-size: 0.9rem;
     font-weight: 600;

@@ -336,6 +336,20 @@ const tintas = [
     margin-top: 2rem;
   }
 
+  /* En el celular los dos botones van uno debajo del otro y a todo
+     el ancho: se tocan fácil con el pulgar y no queda el borde
+     derecho desparejo (cada texto tiene distinto largo). */
+  @media (max-width: 599px) {
+    .hero__actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .hero__actions .btn {
+      justify-content: center;
+    }
+  }
+
   .hero__ghost {
     background: color-mix(in srgb, var(--color-text) 6%, transparent);
     border-color: color-mix(in srgb, var(--color-text) 35%, transparent);
@@ -362,6 +376,10 @@ const tintas = [
   .hero__stat {
     display: flex;
     flex-direction: column-reverse; /* número arriba, etiqueta abajo; en el HTML va <dt> primero */
+    /* Con column-reverse el contenido se apila desde ABAJO: si una
+       etiqueta ocupa 1 renglón y las otras 2, su número queda más
+       bajo. flex-end (que acá es "arriba") alinea los 3 números. */
+    justify-content: flex-end;
     gap: 0.2rem;
     padding-top: 0.8rem;
     border-top: 3px solid var(--ink-c);
